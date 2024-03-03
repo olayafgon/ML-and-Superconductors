@@ -1,0 +1,13 @@
+En un archivo DOSCAR típicamente utilizado en cálculos de estructura electrónica en la teoría de la densidad funcional (DFT) en el contexto de códigos como VASP (Vienna Ab initio 
+Simulation Package), después de la cabecera y de los datos de energía y densidad de estados (DOS) en 3 columnas, puede aparecer una línea con 5 valores. Esta línea generalmente 
+indica información adicional sobre la DOS y puede variar según la configuración específica de tu cálculo. Aquí hay una explicación general:
+
+Energía máxima y mínima, número de puntos DOS, Energía de Fermi y un valor adicional:
+    · El primer valor es la energía máxima.
+    · El segundo valor es la energía mínima.
+    · El tercer valor es el número de puntos de DOS.
+    · El cuarto valor es la energía de Fermi.
+    · El quinto valor puede variar, pero comúnmente es simplemente un número (por ejemplo, "1.0000"). A veces, puede contener información adicional sobre la simetría de la DOS 
+    o la escala de la misma.
+
+Después de esta línea, los datos de DOS generalmente continúan en 4 columnas: energía, DOS total, DOS parcial (si se calcula para átomos específicos), y la integral de la DOS.
