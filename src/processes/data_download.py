@@ -146,7 +146,7 @@ class data_download:
                     # Constructs input and output paths
                     ruta_entrada = os.path.join(carpeta, archivo_comprimido)
                     carpeta_destino = carpeta.replace(directorio_origen, '').lstrip(os.path.sep)
-                    ruta_salida = os.path.join(directorio_destino, carpeta_destino, archivo_comprimido.replace('.xz', ''))
+                    ruta_salida = os.path.join(directorio_destino, carpeta_destino, archivo_comprimido.replace('.xz', '.txt'))
 
                     # Creates the destination folder if it does not exist
                     os.makedirs(os.path.join(directorio_destino, carpeta_destino), exist_ok=True)
@@ -173,6 +173,9 @@ class data_download:
         This function checks the existence of required folders and guides the user through the data download process.
         It prompts the user for input based on the existing folders and performs appropriate actions accordingly.
         """
+
+        # TODO: Revisar que si se cumple una condicion salga de la funcion. Si no sigue preguntando xd
+
         # Construct paths to required folders
         materials_names_folder = os.path.join(self.data_folder_path, "materials_names")
         data_compressed_folder = os.path.join(self.data_folder_path, "data_compressed")
