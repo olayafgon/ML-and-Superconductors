@@ -1,5 +1,7 @@
-# Electronic structure calculations with machine learning techniques
-# Superconductor prediction
+# Electronic structure calculations with machine learning techniques - Superconductor prediction
+
+Author: Olaya Folgueiras González
+University of Oviedo
 
 This repository contains a final project of the degree on physics. 
 
