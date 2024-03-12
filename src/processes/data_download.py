@@ -7,13 +7,8 @@ Requires some configurations from config.py:
     - DATA_FILE_TYPE
 
 Example:
-    import config
-    from data_download_module import data_download
-
-    # Initialize the data download module
+    from processes import data_download
     downloader = data_download(run_results_path)
-
-    # Start the data download workflow
     downloader.data_download_workflow()
 """
 
