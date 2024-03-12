@@ -174,8 +174,6 @@ class data_download:
         It prompts the user for input based on the existing folders and performs appropriate actions accordingly.
         """
 
-        # TODO: Revisar que si se cumple una condicion salga de la funcion. Si no sigue preguntando xd
-
         # Construct paths to required folders
         materials_names_folder = os.path.join(self.data_folder_path, "materials_names")
         data_compressed_folder = os.path.join(self.data_folder_path, "data_compressed")
@@ -198,6 +196,7 @@ class data_download:
                 self.get_names()
                 self.download_compressed_data()
                 self.decompress_data()
+                return
             elif confirm.lower() == 'n':
                 print("  · File download cancelled. Exiting the program...")
                 sys.exit()
@@ -235,7 +234,7 @@ class data_download:
                     whole_download_workflow()
 
         # Exist materials_names and data_raw
-        if os.path.exists(materials_names_folder) and os.path.exists(data_raw_folder):
+        elif os.path.exists(materials_names_folder) and os.path.exists(data_raw_folder):
             confirm = input("  · Materials names and data raw folder exists. Downloading new data may overwrite existing files. Do you want to continue downloading the data? (y/n): ")
             if confirm.lower() != 'y':
                 confirm = input("  · Do you want to use existing data? (y/n): ")
@@ -249,7 +248,7 @@ class data_download:
                 whole_download_workflow()
         
         # Exist data_compressed and data_raw
-        if os.path.exists(data_compressed_folder) and os.path.exists(data_raw_folder):
+        elif os.path.exists(data_compressed_folder) and os.path.exists(data_raw_folder):
             confirm = input("  · Data compressed and data raw folder exists. Downloading new data may overwrite existing files. What do you want to do? (continue/use compressed data/use raw data): ")
             if confirm.lower() == 'use compressed data':
                 self.decompress_data()
@@ -269,6 +268,7 @@ class data_download:
                 self.get_names()
             self.download_compressed_data()
             self.decompress_data()
+            return
 
         # Only exists data_compressed
         elif os.path.exists(data_compressed_folder):
