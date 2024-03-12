@@ -157,14 +157,15 @@ class data_download:
                             start_time = time.time()
                             shutil.copyfileobj(f_in, f_out, length=limite_velocidad)
                             elapsed_time = time.time() - start_time
-                            print(f'Decompressed: {ruta_entrada} (Time: {elapsed_time:.2f} s)')
+                            print(f'· Decompressed: {ruta_entrada} (Time: {elapsed_time:.2f} s)')
                     except Exception as e:
                         with open(archivo_error, 'a') as error_file:
                             error_file.write(f'Error in {ruta_entrada}: {str(e)}\n')
-                        print(f'Error in {ruta_entrada}: {str(e)}')
+                        print(f'· Error in {ruta_entrada}: {str(e)}')
                         continue  # Skips to the next file if there is an error
 
         print('Process completed.')
+
 
     def data_download_workflow(self):
         """
