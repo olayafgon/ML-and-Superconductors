@@ -8,7 +8,7 @@ Requires some configurations from config.py:
 
 Example:
     from processes import data_download
-    downloader = data_download(run_results_path)
+    downloader = data_download.data_download(run_results_path)
     downloader.data_download_workflow()
 """
 
