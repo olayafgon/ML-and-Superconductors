@@ -2,3 +2,4 @@ data
 data/aflowlib_data/
 data/data_download/
 results
+__pycache__
