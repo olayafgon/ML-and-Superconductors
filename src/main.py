@@ -32,7 +32,7 @@ def main():
 
     #END
     end_ = time.time()
-    tools.log_main(f'Total runtime {(end_-start_):.2f}s ({(end_-start_):.0f}min)', save_path=run_results_path)
+    tools.log_main(f'Total runtime {(end_-start_):.2f}s ({(end_-start_)/60:.0f}min)', save_path=run_results_path)
 
     
 
