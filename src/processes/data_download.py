@@ -75,6 +75,7 @@ class data_download:
         """
         materials_names_folder = os.path.join(self.data_folder_path, "materials_names")
         data_compressed_folder = os.path.join(self.data_folder_path, "data_compressed")
+        error_file_path = os.path.join(data_compressed_folder, "00_Errors.txt")
 
         for structure_name in self.structures:
             print(f'    - Downloading data for {structure_name}...')
@@ -104,7 +105,11 @@ class data_download:
                         url = f'{self.aflowlib_link}{aa}/{bb}/{file_name}'
                     file_path = os.path.join(output_directory, f"{aa}_{bb}.xz")
                     
-                    urllib.request.urlretrieve(url, file_path)      # Download file from URL
+                    try:
+                        urllib.request.urlretrieve(url, file_path)
+                    except urllib.error.HTTPError as e:
+                        with open(error_file_path, 'a') as error_file:
+                            error_file.write(f'Error in {url}: {str(e)}\n')
                 
             elapsed_time_structure = time.time() - start_time_structure
             print(f'     Downloaded all files for {structure_name} ({elapsed_time_structure:.2f} s)')
