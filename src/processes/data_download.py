@@ -102,10 +102,10 @@ class data_download:
                         url = f'{self.aflowlib_link}{aa}/{bb}/{self.file_type}'
                     if self.file_type == '_dosdata.json.xz':
                         file_name = bb + self.file_type
-                        url = f'{self.aflowlib_link}{aa}/{bb}/{file_name}'
+                        file_name_cleaned = tools.clean_path(file_name) # Avoid errors
+                        url = f'{self.aflowlib_link}{aa}/{bb}/{file_name_cleaned}'
                     file_path = os.path.join(output_directory, f"{aa}_{bb}.xz")
-                    cleaned_path = tools.clean_path(file_path) # Avoid errors
-                    
+
                     try:
                         urllib.request.urlretrieve(url, file_path)
                     except urllib.error.HTTPError as e:
