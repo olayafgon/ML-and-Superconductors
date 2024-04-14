@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import datetime 
+import re
 
 sys.path.append('./../')
 
@@ -89,3 +90,11 @@ def copy_file(source_path, destination_path):
     """
     shutil.copy(source_path, destination_path)
     print(f"File copied from {source_path} to {destination_path}")
+
+
+def clean_path(path):
+    # Caracteres no válidos en nombres de archivos de Windows
+    invalid_chars = r'[<>:"/\\|?*]'
+    # Reemplaza los caracteres no válidos con guiones bajos
+    cleaned_path = re.sub(invalid_chars, '_', path)
+    return cleaned_path
