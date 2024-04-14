@@ -85,7 +85,6 @@ class data_download:
 
             # For each structure
             entry_file = os.path.join(materials_names_folder, f'{structure_name}_names.txt')
-
             with open(entry_file, "r") as file:
                 for line in file:
                     line = line.strip()
@@ -95,7 +94,6 @@ class data_download:
                         if aa == ".":
                             break
                         j += 1
-                    
                     aa = structure_name
                     bb = line[0:j]
                     
@@ -106,8 +104,7 @@ class data_download:
                         url = f'{self.aflowlib_link}{aa}/{bb}/{file_name}'
                     file_path = os.path.join(output_directory, f"{aa}_{bb}.xz")
                     
-                    # Download file from URL
-                    urllib.request.urlretrieve(url, file_path)
+                    urllib.request.urlretrieve(url, file_path)      # Download file from URL
                 
             elapsed_time_structure = time.time() - start_time_structure
             print(f'     Downloaded all files for {structure_name} ({elapsed_time_structure:.2f} s)')
