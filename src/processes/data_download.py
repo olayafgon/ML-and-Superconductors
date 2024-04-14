@@ -77,6 +77,9 @@ class data_download:
         data_compressed_folder = os.path.join(self.data_folder_path, "data_compressed")
 
         for structure_name in self.structures:
+            print(f'    - Downloading data for {structure_name}...')
+            start_time_structure = time.time()
+
             output_directory = os.path.join(data_compressed_folder, structure_name)
             tools.create_folder(output_directory)
 
@@ -104,8 +107,10 @@ class data_download:
                     file_path = os.path.join(output_directory, f"{aa}_{bb}.xz")
                     
                     # Download file from URL
-                    print(f"· Downloading: {url}")
                     urllib.request.urlretrieve(url, file_path)
+                
+            elapsed_time_structure = time.time() - start_time_structure
+            print(f'     Downloaded all files for {structure_name} ({elapsed_time_structure:.2f} s)')
 
     def decompress_data(self):
         """
@@ -126,6 +131,8 @@ class data_download:
 
         speed_limit = 2 * 500 * 1024 * 1024 # 2*500Mb/s
         for folder, subfolder, files in os.walk(source_folder_path):
+            print(f'    - Decompressing data for {folder}...')
+            start_time = time.time()
             for compress_file in files:
                 if compress_file.endswith('.xz'):
                     # Constructs input and output paths
@@ -139,18 +146,15 @@ class data_download:
                     os.makedirs(os.path.join(destination_folder_path, out_folder), exist_ok=True)
                     try:
                         with lzma.open(in_path, 'rb') as f_in, open(ruta_salida, 'wb') as f_out:
-                            start_time = time.time()
                             shutil.copyfileobj(f_in, f_out, length=speed_limit)
-                            elapsed_time = time.time() - start_time
-                            print(f'· Decompressed: {in_path} (Time: {elapsed_time:.2f} s)')
                     except Exception as e:
                         with open(error_file_path, 'a') as error_file:
                             error_file.write(f'Error in {in_path}: {str(e)}\n')
                         print(f'· Error in {in_path}: {str(e)}')
                         continue  
 
-        print('Process completed.')
-
+            elapsed_time = time.time() - start_time
+            print(f'     Decompressed all files for {folder} ({elapsed_time:.2f} s)')
 
     def data_download_workflow(self):
         """
