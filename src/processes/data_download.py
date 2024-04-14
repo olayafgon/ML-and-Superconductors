@@ -45,7 +45,6 @@ class data_download:
         """
         Create a folder in the data folder with files containing the names of all the materials available in Aflowlib for each bravais lattice.
         """
-        # Creates folder
         materials_names_folder = os.path.join(self.data_folder_path, 'materials_names')
         tools.create_folder(materials_names_folder)
     
@@ -78,17 +77,14 @@ class data_download:
         data_compressed_folder = os.path.join(self.data_folder_path, "data_compressed")
 
         for structure_name in self.structures:
-            # Output directory
             output_directory = os.path.join(data_compressed_folder, structure_name)
             tools.create_folder(output_directory)
 
             # For each structure
             entry_file = os.path.join(materials_names_folder, f'{structure_name}_names.txt')
 
-            # Download loop
             with open(entry_file, "r") as file:
                 for line in file:
-                    # Remove newline character
                     line = line.strip()
                     
                     j = 0
@@ -100,64 +96,58 @@ class data_download:
                     aa = structure_name
                     bb = line[0:j]
                     
-                    url = f'{self.aflowlib_link}{aa}/{bb}/{self.file_type}'
+                    if self.file_type == 'DOSCAR.static.xz':
+                        url = f'{self.aflowlib_link}{aa}/{bb}/{self.file_type}'
+                    if self.file_type == '_dosdata.json.xz':
+                        file_name = bb + self.file_type
+                        url = f'{self.aflowlib_link}{aa}/{bb}/{file_name}'
                     file_path = os.path.join(output_directory, f"{aa}_{bb}.xz")
                     
-                    # Print URL before downloading
-                    print(f"Downloading: {url}")
-
                     # Download file from URL
+                    print(f"· Downloading: {url}")
                     urllib.request.urlretrieve(url, file_path)
 
     def decompress_data(self):
         """
         Decompresses files from the source directory to the destination directory.
         """
-        # Path to the directory containing the compressed files
-        directorio_origen = os.path.join(self.data_folder_path, "data_compressed")
-
-        # Path to the directory where to decompress the files
-        directorio_destino = os.path.join(self.data_folder_path, "data_raw")
-
+        # Path to compressed files
+        source_folder_path = os.path.join(self.data_folder_path, "data_compressed")
+        # Path decompress the files
+        destination_folder_path = os.path.join(self.data_folder_path, "data_raw")
         # Path to the .txt file to save names of files that cannot be decompressed
-        archivo_error = os.path.join(directorio_destino, "00_Errors.txt")
+        error_file_path = os.path.join(destination_folder_path, "00_Errors.txt")
 
-        # Speed limit in bytes per second
-        limite_velocidad = 500 * 1024 * 1024
-
-        # Verifies if the source directory exists
-        if not os.path.exists(directorio_origen):
-            print(f'Error: The source directory "{directorio_origen}" does not exist.')
+        if not os.path.exists(source_folder_path):
+            print(f'Error: The source directory "{source_folder_path}" does not exist.')
             exit()
+        if not os.path.exists(destination_folder_path):
+            os.makedirs(destination_folder_path)
 
-        # Verifies if the destination directory exists, if not, creates it
-        if not os.path.exists(directorio_destino):
-            os.makedirs(directorio_destino)
-
-        # Loops through all folders and subfolders in the source directory
-        for carpeta, subcarpetas, archivos in os.walk(directorio_origen):
-            for archivo_comprimido in archivos:
-                if archivo_comprimido.endswith('.xz'):
+        speed_limit = 2 * 500 * 1024 * 1024 # 2*500Mb/s
+        for folder, subfolder, files in os.walk(source_folder_path):
+            for compress_file in files:
+                if compress_file.endswith('.xz'):
                     # Constructs input and output paths
-                    ruta_entrada = os.path.join(carpeta, archivo_comprimido)
-                    carpeta_destino = carpeta.replace(directorio_origen, '').lstrip(os.path.sep)
-                    ruta_salida = os.path.join(directorio_destino, carpeta_destino, archivo_comprimido.replace('.xz', '.txt'))
-
-                    # Creates the destination folder if it does not exist
-                    os.makedirs(os.path.join(directorio_destino, carpeta_destino), exist_ok=True)
-
+                    in_path = os.path.join(folder, compress_file)
+                    out_folder = folder.replace(source_folder_path, '').lstrip(os.path.sep)
+                    if self.file_type == 'DOSCAR.static.xz':
+                        ruta_salida = os.path.join(destination_folder_path, out_folder, compress_file.replace('.xz', '.txt'))
+                    if self.file_type == '_dosdata.json.xz':
+                        ruta_salida = os.path.join(destination_folder_path, out_folder, compress_file.replace('.xz', '.json'))
+                    
+                    os.makedirs(os.path.join(destination_folder_path, out_folder), exist_ok=True)
                     try:
-                        # Decompresses the file limiting the speed
-                        with lzma.open(ruta_entrada, 'rb') as f_in, open(ruta_salida, 'wb') as f_out:
+                        with lzma.open(in_path, 'rb') as f_in, open(ruta_salida, 'wb') as f_out:
                             start_time = time.time()
-                            shutil.copyfileobj(f_in, f_out, length=limite_velocidad)
+                            shutil.copyfileobj(f_in, f_out, length=speed_limit)
                             elapsed_time = time.time() - start_time
-                            print(f'· Decompressed: {ruta_entrada} (Time: {elapsed_time:.2f} s)')
+                            print(f'· Decompressed: {in_path} (Time: {elapsed_time:.2f} s)')
                     except Exception as e:
-                        with open(archivo_error, 'a') as error_file:
-                            error_file.write(f'Error in {ruta_entrada}: {str(e)}\n')
-                        print(f'· Error in {ruta_entrada}: {str(e)}')
-                        continue  # Skips to the next file if there is an error
+                        with open(error_file_path, 'a') as error_file:
+                            error_file.write(f'Error in {in_path}: {str(e)}\n')
+                        print(f'· Error in {in_path}: {str(e)}')
+                        continue  
 
         print('Process completed.')
 
