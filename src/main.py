@@ -7,8 +7,7 @@ import sys
 import time
 from datetime import datetime
 
-from processes import data_download
-from processes import main_processes
+from data_handling import data_download
 from utils import tools
 
 
@@ -21,14 +20,18 @@ def main():
 
     #START
     start_ = time.time()
-    run_instance = main_processes.Main_processes()
     
     # Create results folder
-    run_results_path = run_instance.create_run_results_folder()
+    run_results_path = tools.create_run_results_folder()
 
     # Download or check data
     data_dowloading = data_download.data_download(run_results_path)
     data_dowloading.data_download_workflow()
+
+    # Read and transform data to csv
+
+
+
 
     #END
     end_ = time.time()
