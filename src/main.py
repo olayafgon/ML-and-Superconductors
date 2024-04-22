@@ -7,7 +7,7 @@ import sys
 import time
 from datetime import datetime
 
-from data_handling import data_download
+from data_handling import data_download, data_read
 from utils import tools
 
 
@@ -15,6 +15,7 @@ sys.path.append('./../')
 import config
 
 _DATA_DOWNLOAD = config.DATA_DOWNLOAD
+_READ_DATA_RAW = config.READ_DATA_RAW
 
 
 def main():
@@ -27,12 +28,13 @@ def main():
 
     # Download or check data
     if _DATA_DOWNLOAD:
-        data_dowloading = data_download.data_download(run_results_path)
+        data_dowloading = data_download.DataDownload(run_results_path)
         data_dowloading.data_download_workflow()
 
-    # Read and transform data to csv
-
-
+    # Read and save to csv raw_data
+    if _READ_DATA_RAW:
+        raw_data_reading = data_read.MaterialDataProcessor(run_results_path)
+        raw_data_reading.data_raw_read_workflow()
 
 
     #END
