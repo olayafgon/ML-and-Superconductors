@@ -11,7 +11,7 @@ from utils import tools
 sys.path.append('./../')
 import config
 
-class data_download:
+class DataDownload:
     def __init__(self, run_results_path):
         """
         Initialize the data download module.
