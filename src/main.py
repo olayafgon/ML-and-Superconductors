@@ -14,6 +14,7 @@ from utils import tools
 sys.path.append('./../')
 import config
 
+_DATA_DOWNLOAD = config.DATA_DOWNLOAD
 
 
 def main():
@@ -25,8 +26,9 @@ def main():
     run_results_path = tools.create_run_results_folder()
 
     # Download or check data
-    data_dowloading = data_download.data_download(run_results_path)
-    data_dowloading.data_download_workflow()
+    if _DATA_DOWNLOAD:
+        data_dowloading = data_download.data_download(run_results_path)
+        data_dowloading.data_download_workflow()
 
     # Read and transform data to csv
 
