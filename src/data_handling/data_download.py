@@ -25,6 +25,7 @@ class data_download:
         self.data_dowload_check = config.DATA_DOWNLOAD
         self.aflowlib_link = 'http://aflowlib.duke.edu/AFLOWDATA/ICSD_WEB/'
         self.file_type = config.DATA_FILE_TYPE
+        tools.log_main(f'MODULE: data_download...', save_path=self.run_results_path)
 
     def get_names(self):
         """Creates a folder with files containing material names for each Bravais lattice."""
@@ -243,7 +244,6 @@ class data_download:
 
     def whole_download_workflow(self):
         """Performs the complete workflow to download data."""
-        tools.log_main(f'MODULE: data_download...', save_path=self.run_results_path)
         confirm = input('WARNING: You are about to start downloading files, this can take up to several hours. Are you sure you want to continue? (y/n): ')
         if confirm.lower() == 'y':
             tools.log_main("  · Starting download. Please, be patient.", save_path=self.run_results_path)
