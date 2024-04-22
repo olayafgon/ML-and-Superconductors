@@ -47,6 +47,8 @@ class data_download:
                 for line in modified_lines:
                     f_out.write(line)
 
+        tools.log_main(f'Starting data dowload', save_path=self.run_results_path)
+
     def download_compressed_data(self):
         """Downloads compressed data files from Aflowlib."""
 
@@ -123,6 +125,7 @@ class data_download:
 
     def data_download_workflow(self): 
         """Manages the data download workflow, handling existing folders and user choices."""
+        
 
         folder_combinations = {
             (True, True, True): self.handle_all_folders_exist,
@@ -149,10 +152,10 @@ class data_download:
         if confirm.lower() != 'y':
             confirm = input("  · Do you want to use existing data? (y/n): ")
             if confirm.lower() != 'y':
-                print("  · Data download cancelled. Exiting the program...")
+                tools.log_main("  · Data download cancelled. Exiting the program...", save_path=self.run_results_path)
                 sys.exit()
             else:
-                print(f"  · Using existing data in {self.data_folder_path}")
+                tools.log_main(f"  · Using existing data in {self.data_folder_path}", save_path=self.run_results_path)
                 return
         else:
             self.whole_download_workflow()
@@ -161,11 +164,12 @@ class data_download:
         """Handles the case where materials_names and data_compressed folders exist."""
         confirm = input("  · Materials names and data compressed folder exists. Do you want to decompress and use it? (y/n): ")
         if confirm.lower() == 'y':
+            tools.log_main("  · Decompressing existing data...", save_path=self.run_results_path)
             self.decompress_data()
         else:
             confirm = input("  · Continuing will overwrite existing data. Do you want to continue downloading the data? (y/n): ")
             if confirm.lower() != 'y':
-                print("  · Data download cancelled. Exiting the program...")
+                tools.log_main("  · Data download cancelled. Exiting the program...", save_path=self.run_results_path)
                 sys.exit()
             else:
                 self.whole_download_workflow()
@@ -176,10 +180,10 @@ class data_download:
         if confirm.lower() != 'y':
             confirm = input("  · Do you want to use existing data? (y/n): ")
             if confirm.lower() != 'y':
-                print("  · Data download cancelled. Exiting the program...")
+                tools.log_main("  · Data download cancelled. Exiting the program...", save_path=self.run_results_path)
                 sys.exit()
             else:
-                print(f"  · Using existing data in {self.data_folder_path}")
+                tools.log_main(f"  · Using existing data in {self.data_folder_path}", save_path=self.run_results_path)
                 return
         else:
             self.whole_download_workflow()
@@ -188,19 +192,21 @@ class data_download:
         """Handles the case where data_compressed and data_raw folders exist."""
         confirm = input("  · Data compressed and data raw folder exists. Downloading new data may overwrite existing files. What do you want to do? (continue/use compressed data/use raw data): ")
         if confirm.lower() == 'use compressed data':
+            tools.log_main("  · Decompressing existing data...", save_path=self.run_results_path)
             self.decompress_data()
         elif confirm.lower() == 'use raw data':
-            print(f"  · Using existing data in {self.data_folder_path}")
+            tools.log_main(f"  · Using existing data in {self.data_folder_path}", save_path=self.run_results_path)
             return
         elif confirm.lower() == 'continue':
             self.whole_download_workflow()
         else:
-            print("  · Invalid entry. Exiting the program...")
+            tools.log_main("  · Invalid entry. Exiting the program...", save_path=self.run_results_path)
             sys.exit()
 
     def handle_names_exist(self):
         """Handles the case where only the materials_names folder exists."""
         confirm = input("  · Materials names folder already exists. Do you want to update the materials list or keep the existing one? (update/keep): ")
+        tools.log_main("  · Starting download. Please, be patient.", save_path=self.run_results_path)
         if confirm.lower() == 'update':
             self.get_names()
         self.download_compressed_data()
@@ -211,11 +217,12 @@ class data_download:
         """Handles the case where only the data_compressed folder exists."""
         confirm = input("  · Data compressed folder exists. Do you want to decompress and use it? (y/n): ")
         if confirm.lower() == 'y':
+            tools.log_main("  · Decompressing existing data...", save_path=self.run_results_path)
             self.decompress_data()
         else:
             confirm = input("  · Continuing will overwrite existing data. Do you want to continue downloading the data? (y/n): ")
             if confirm.lower() != 'y':
-                print("  · Data download cancelled. Exiting the program...")
+                tools.log_main("  · Data download cancelled. Exiting the program...", save_path=self.run_results_path)
                 sys.exit()
             else:
                 self.whole_download_workflow()
@@ -226,26 +233,27 @@ class data_download:
         if confirm.lower() != 'y':
             confirm = input("  · Do you want to use existing data? (y/n): ")
             if confirm.lower() != 'y':
-                print("  · Data download cancelled. Exiting the program...")
+                tools.log_main("  · Data download cancelled. Exiting the program...", save_path=self.run_results_path)
                 sys.exit()
             else:
-                print(f"  · Using existing data in {self.data_folder_path}")
+                tools.log_main(f"  · Using existing data in {self.data_folder_path}", save_path=self.run_results_path)
                 return
         else:
             self.whole_download_workflow()
 
     def whole_download_workflow(self):
         """Performs the complete workflow to download data."""
+        tools.log_main(f'MODULE: data_download...', save_path=self.run_results_path)
         confirm = input('WARNING: You are about to start downloading files, this can take up to several hours. Are you sure you want to continue? (y/n): ')
         if confirm.lower() == 'y':
-            print("  · Starting download. Please, be patient.")
+            tools.log_main("  · Starting download. Please, be patient.", save_path=self.run_results_path)
             self.get_names()
             self.download_compressed_data()
             self.decompress_data()
             return
         elif confirm.lower() == 'n':
-            print("  · File download cancelled. Exiting the program...")
+            tools.log_main("  · File download cancelled. Exiting the program...", save_path=self.run_results_path)
             sys.exit()
         else:
-            print("  · Invalid entry. Exiting the program...")
+            tools.log_main("  · Invalid entry. Exiting the program...", save_path=self.run_results_path)
             sys.exit() 
