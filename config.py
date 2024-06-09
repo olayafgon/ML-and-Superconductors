@@ -6,8 +6,8 @@ RESULTS_FOLDER = r'.\..\results' # Ruta relativa a la carpeta donde se guardan l
 # DESCARGA DE DATOS DE AFLOWLIB
 # True si se quieren descargar los datos, False si ya están descargados (deberán estar en DATA_FOLDER_PATH)
 DATA_DOWNLOAD = False 
-# True si se quieren leer los datos de data_raw, False si quieres leer los guardados en data
-READ_DATA_RAW = False 
+# True si se quieren leer los datos de data_raw y guardarlos en csv, False si quieres leer los guardados en data
+READ_DATA_RAW = True 
 # Velocidad límite de descompresión
 SPEED_LIMIT = 2 * 500 * 1024 * 1024 # 2*500Mb/s
 # Ruta relativa a la carpeta donde se guardan los datos
@@ -18,3 +18,4 @@ STRUCTURES = ["BCC", "BCT", "CUB", "FCC", "HEX", "MCL", "MCLC", "ORC", "ORCC", "
 DATA_FILE_TYPE = '_dosdata.json.xz'
 # Limites de energía respecto a Fermi en la lectura
 EFERMI_LIMIT = 15
+EFERMI_GRID_POINTS = 1999 # Esto funciona para limite en 15, recalcular para otros limites
