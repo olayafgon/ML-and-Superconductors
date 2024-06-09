@@ -3,6 +3,7 @@ import sys
 import shutil
 import datetime 
 import re
+import matplotlib.pyplot as plt
 
 sys.path.append('./../')
 import config
@@ -107,3 +108,7 @@ def clean_path(path):
     invalid_chars = r'[<>:"/\\|?*]'
     cleaned_path = re.sub(invalid_chars, '_', path)
     return cleaned_path
+
+def save_plot(results_folder_path, figure_name):
+    figure_path = os.path.join(results_folder_path, figure_name)
+    plt.savefig(figure_path, bbox_inches='tight', overwrite=True)
