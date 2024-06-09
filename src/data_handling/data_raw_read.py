@@ -9,7 +9,7 @@ from utils import tools
 sys.path.append('./../')
 import config
 
-class MaterialDataProcessor:
+class MaterialRawDataRead:
     """Class to process material data files and extract DOS information."""
 
     def __init__(self, run_results_path):
