@@ -13,6 +13,7 @@ class MaterialDataProcessor:
     """Class to process material data files and extract DOS information."""
 
     def __init__(self, run_results_path):
+        tools.log_main(f'MODULE: data_read - Reading data_raw...', save_path=self.run_results_path)
         self.run_results_path = run_results_path
         self.data_folder_path = config.DATA_FOLDER_PATH
         self.data_raw_path = os.path.join(self.data_folder_path, r'data_raw')
@@ -119,6 +120,7 @@ class MaterialDataProcessor:
         all_data_df = self.convert_to_df()
         all_data_df.fillna(0.0, inplace=True)
         all_data_df.to_csv(self.dos_csv_path, index=False)
+        tools.log_main(f'  · Data read and saved in {self.dos_csv_path}', save_path=self.run_results_path)
 
 
         
