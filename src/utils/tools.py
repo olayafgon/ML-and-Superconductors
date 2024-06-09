@@ -7,7 +7,6 @@ import re
 sys.path.append('./../')
 import config
 
-
 def log(text, save_path, printing = True, create = False):
     """
     Logs the provided text to a file, creating file if it does not exist, and optionally prints it.
@@ -34,7 +33,6 @@ def log(text, save_path, printing = True, create = False):
         with open(log_path, 'a', encoding='utf-8') as file:
             file.write(str(dt)+': '+text+' \n')
 
-
 def log_main(text, save_path, printing = True, create = False):
     """
     Logs the provided text to the main log file and optionally prints it.
@@ -60,7 +58,6 @@ def log_main(text, save_path, printing = True, create = False):
         with open(log_path, 'a', encoding='utf-8') as file:
             file.write(str(dt)+': '+text+' \n')
 
-
 def create_folder(path, delete_old = False):
     '''
     Creates a folder in an specific path.  
@@ -78,19 +75,19 @@ def create_folder(path, delete_old = False):
         os.makedirs(path)
 
 def create_run_results_folder():
-        '''
-        Creates the results folder for the run and return its path.
+    '''
+    Creates the results folder for the run and return its path.
 
-        RETURNS:
-            - str: Path to the created results folder.
-        '''
-        all_results_path = config.RESULTS_FOLDER
-        run_results_path = os.path.join(all_results_path, str(datetime.datetime.now().strftime('%Y%m%d_%H_%M')))
-        create_folder(all_results_path)
-        create_folder(run_results_path)
-        shutil.copy('../config.py', run_results_path)
-        log_main(f'MODULE: Results folder created: {run_results_path}', save_path=run_results_path)
-        return run_results_path
+    RETURNS:
+        - str: Path to the created results folder.
+    '''
+    all_results_path = config.RESULTS_FOLDER
+    run_results_path = os.path.join(all_results_path, str(datetime.datetime.now().strftime('%Y%m%d_%H_%M')))
+    create_folder(all_results_path)
+    create_folder(run_results_path)
+    shutil.copy('../config.py', run_results_path)
+    log_main(f'MODULE: Results folder created: {run_results_path}', save_path=run_results_path)
+    return run_results_path
 
 def copy_file(source_path, destination_path):
     """
@@ -106,10 +103,7 @@ def copy_file(source_path, destination_path):
     shutil.copy(source_path, destination_path)
     print(f"File copied from {source_path} to {destination_path}")
 
-
 def clean_path(path):
-    # Caracteres no válidos en nombres de archivos de Windows
     invalid_chars = r'[<>:"/\\|?*]'
-    # Reemplaza los caracteres no válidos con guiones bajos
     cleaned_path = re.sub(invalid_chars, '_', path)
     return cleaned_path
