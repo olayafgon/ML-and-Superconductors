@@ -7,7 +7,8 @@ import sys
 import time
 from datetime import datetime
 
-from data_handling import data_raw_download, data_raw_read
+from data_handling import data_raw_download, data_raw_read, data_processing
+from visualizer import eda
 from utils import tools
 
 
@@ -35,6 +36,14 @@ def main():
     if _READ_DATA_RAW:
         raw_data_reading = data_raw_read.MaterialRawDataRead(run_results_path)
         raw_data_reading.data_raw_read_workflow()
+    
+    # Procces data
+    MaterialsProcessor = data_processing.DataProcessor(run_results_path)
+    materials_data, supercon_data = MaterialsProcessor.processor()
+
+    #EDA
+    plotter = eda.Plotter(materials_data, run_results_path)
+    plotter.workflow()
 
 
     #END
