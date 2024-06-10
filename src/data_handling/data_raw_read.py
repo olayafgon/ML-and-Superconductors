@@ -13,12 +13,12 @@ class MaterialRawDataRead:
     """Class to process material data files and extract DOS information."""
 
     def __init__(self, run_results_path):
-        tools.log_main(f'MODULE: data_read - Reading data_raw...', save_path=self.run_results_path)
         self.run_results_path = run_results_path
         self.data_folder_path = config.DATA_FOLDER_PATH
         self.data_raw_path = os.path.join(self.data_folder_path, r'data_raw')
         self.dos_csv_path = os.path.join(self.data_folder_path, r'dos_data.csv')
         self.data_dict = {}
+        tools.log_main(f'MODULE: data_read - Reading data_raw...', save_path=self.run_results_path)
 
     @staticmethod
     def extract_material_data(file_path):
