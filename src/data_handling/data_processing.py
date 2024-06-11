@@ -26,8 +26,9 @@ class DataProcessor:
         self.materials_data['ICSD'] = pd.to_numeric(self.materials_data['ICSD'], errors='coerce').astype('Int64')
         num_nulos = self.materials_data['ICSD'].isnull().sum()
         len_df_pre = len(self.materials_data)
-        print(f"  {num_nulos} rows ({num_nulos/len_df_pre*100:.4f} %) where dropped because of null on ICSD.")
         self.materials_data.dropna(subset=['ICSD'], inplace=True)
+        tools.log_main(f"  - {num_nulos} rows ({num_nulos/len_df_pre*100:.4f} %) where dropped because of null on ICSD.", 
+                       save_path=self.run_results_path)
 
     def identify_superconductors(self):
         ICSD_supercon = self.supercon_data.ICSD.unique().astype(int).tolist()

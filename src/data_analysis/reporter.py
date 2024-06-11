@@ -71,3 +71,4 @@ class StatsReporter:
         self.magnetic_stats(report_file)
         tools.write_to_report(report_file, f'····················································\n')
         self.element_stats(report_file)
+        tools.log_main(f'  - Report saved: {report_file}', save_path=self.run_results_path)

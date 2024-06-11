@@ -142,6 +142,8 @@ class Plotter:
         self._plot_top_elements_overall(element_df)
 
     def workflow(self):
+        tools.log_main('· MODULE: Plotter...', save_path=self.run_results_path)
         self.magnetic_properties_plot()
         self.supercon_properties_by_bravais_plot()
         self.element_analysis_plots()
+        tools.log_main(f'  - Plots saved in: {self.run_results_path}', save_path=self.run_results_path)
