@@ -3,6 +3,7 @@ data/data_raw/
 data/data_compressed/
 data/materials_names/
 data/old/
+data
 results
 notebooks/AutogluonModel/
 notebooks/AutogluonModels/
