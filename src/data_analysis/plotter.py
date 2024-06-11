@@ -8,80 +8,15 @@ import re
 
 pd.set_option('display.max_columns', None)
 
+from data_analysis import analysis_utils
 sys.path.append('./../')
 from utils import tools
 
 class Plotter:
-
     def __init__(self, materials_data, run_results_path):
-        mpl.rcParams['font.family'] = 'serif'
-        mpl.rcParams['font.serif'] = ['Times New Roman'] 
-        mpl.rcParams['text.usetex'] = False
         self.materials_data = materials_data
         self.run_results_path = run_results_path
-        tools.log_main('· MODULE: Plotter...', save_path=self.run_results_path)
-        print(f'  Graphs and report are being saved in: {run_results_path}')
 
-    def _calculate_stats(self, column_name):
-        """Calculates and returns statistics for a given column."""
-        value_counts = self.materials_data[column_name].value_counts()
-        total_count = len(self.materials_data[column_name])
-        true_count = value_counts.get(True, 0)
-        true_percentage = (true_count / total_count) * 100
-        return true_percentage, total_count, true_count
-
-    def superconductors_stats(self):
-        """Calculates and writes superconductor statistics to a report file."""
-        true_percentage, total_count, true_count = self._calculate_stats('is_superconductor')
-        with open(os.path.join(self.run_results_path, 'stats_report.txt'), 'a') as f:
-            f.write(f"Percentage of superconductors: {true_percentage:.2f}%\n")
-            f.write(f'Total materials: {total_count}\n')
-            f.write(f'Superconducting materials: {true_count}\n')
-
-    def magnetic_stats(self):
-        """Calculates and writes magnetic statistics to a report file."""
-        true_percentage, total_count, true_count = self._calculate_stats('is_magnetic')
-        with open(os.path.join(self.run_results_path, 'stats_report.txt'), 'a') as f:
-            f.write(f"Percentage of magnetic: {true_percentage:.2f}%\n")
-            f.write(f'Total materials: {total_count}\n')
-            f.write(f'Magnetic materials: {true_count}\n')
-
-    def element_stats(self):
-        """Calcula y escribe las estadísticas de elementos en el reporte."""
-        df = self.materials_data[['material_name', 'is_superconductor']].copy()
-        df = self._extract_elements_from_dataframe(df)
-        element_df = self._create_element_dataframe(df)
-
-        total_elements = len(element_df['element'].unique())
-
-        superconductor_elements = element_df[element_df['is_superconductor'] == True]['element'].unique()
-        num_superconductor_elements = len(superconductor_elements)
-        percentage_superconductor_elements = (num_superconductor_elements / total_elements) * 100
-
-        nonsuperconductor_elements = element_df[element_df['is_superconductor'] == False]['element'].unique()
-        num_nonsuperconductor_elements = len(nonsuperconductor_elements)
-        percentage_nonsuperconductor_elements = (num_nonsuperconductor_elements / total_elements) * 100
-
-        with open(os.path.join(self.run_results_path, 'stats_report.txt'), 'a') as f:
-            f.write(f"\n--- Estadísticas de Elementos ---\n")
-            f.write(f"Número total de elementos únicos: {total_elements}\n")
-            f.write(f"Número de elementos en superconductores: {num_superconductor_elements} ({percentage_superconductor_elements:.2f}%)\n")
-            f.write(f"Número de elementos en NO superconductores: {num_nonsuperconductor_elements} ({percentage_nonsuperconductor_elements:.2f}%)\n")
-
-    def stats_report(self):
-        """Escribe el reporte completo de estadísticas en un archivo."""
-        report_file = os.path.join(self.run_results_path, 'stats_report.txt')
-        if not os.path.exists(report_file):
-            with open(report_file, 'w') as f:
-                f.write(f'···················· STATISTICS ····················\n')
-        self.superconductors_stats()
-        with open(report_file, 'a') as f:
-            f.write(f'····················································\n')
-        self.magnetic_stats()
-        with open(report_file, 'a') as f:
-            f.write(f'····················································\n')
-        self.element_stats()
-        
     def magnetic_properties_plot(self):
         grouped_data = self.materials_data.groupby(['is_superconductor', 'is_magnetic']).size()
         ax = grouped_data.unstack().plot(kind='bar', stacked=True, colormap='Set2', figsize=(10,4))
@@ -107,6 +42,7 @@ class Plotter:
         plt.legend(title='Propiedades Magnéticas', labels=['No Magnético', 'Magnético'])
         plt.tight_layout()
         tools.save_plot(self.run_results_path, 'magnetic_properties')
+        # plt.show()
 
     def supercon_properties_by_bravais_plot(self):
         grouped_data = self.materials_data.groupby(['bravais_lattice', 'is_superconductor']).size()
@@ -128,31 +64,17 @@ class Plotter:
         plt.legend(title='Propiedades Superconductoras', labels=['Superconductor', 'No Superconductor'])
         plt.tight_layout()
         tools.save_plot(self.run_results_path, 'superconducting_properties_by_bravais_lattice')
+        # plt.show()
     
-    def _extract_elements_from_dataframe(self, df):
-        """Extrae los elementos de la columna 'material_name' del DataFrame."""
-        def extract_elements(formula):
-            return re.findall(r'[A-Z][a-z]?', formula)
-        df['elements'] = df['material_name'].apply(extract_elements)
-        return df
-
-    def _create_element_dataframe(self, df):
-        """Crea un DataFrame con la información de elementos y superconductividad."""
-        element_superconductor = []
-        for i, row in df.iterrows():
-            for element in row['elements']:
-                element_superconductor.append([element, row['is_superconductor']])
-        return pd.DataFrame(element_superconductor, columns=['element', 'is_superconductor'])
-
     def _calculate_element_statistics(self, element_df):
-        """Calcula las estadísticas de los elementos."""
+        """Calculates element statistics."""
         superconductors_count = element_df[element_df['is_superconductor'] == True]['element'].value_counts()
         total_count = element_df['element'].value_counts()
         proportion_superconductors = (superconductors_count / total_count).fillna(0)
         return superconductors_count, proportion_superconductors
 
     def _plot_element_proportion(self, proportion_data, title, filename):
-        """Grafica la proporción de elementos."""
+        """Plots the proportion of elements."""
         plt.figure(figsize=(5, 10))
         ax = sns.barplot(x=proportion_data.values, y=proportion_data.index, palette='coolwarm')
         plt.xlabel('Número de elementos presentes / Total de elementos')
@@ -161,9 +83,10 @@ class Plotter:
         ax.xaxis.grid(True, linestyle='--', linewidth=0.5)
         plt.tight_layout()
         tools.save_plot(self.run_results_path, filename)
+        # plt.show()
 
     def _plot_element_counts(self, counts_data, title, filename):
-        """Grafica el conteo de elementos."""
+        """Plots the element counts."""
         plt.figure(figsize=(5, 10))
         ax = sns.barplot(x=counts_data.values, y=counts_data.index, palette='coolwarm')
         plt.xlabel('Número de veces que aparece el elemento')
@@ -172,9 +95,10 @@ class Plotter:
         ax.xaxis.grid(True, linestyle='--', linewidth=0.5)
         plt.tight_layout()
         tools.save_plot(self.run_results_path, filename)
+        # plt.show()
 
     def _plot_top_elements_overall(self, element_df, top_n=25):
-        """Grafica los elementos más comunes en general."""
+        """Plots the most common elements overall."""
         total_element_counts = element_df['element'].value_counts()
         top_elements = total_element_counts.nlargest(top_n)
 
@@ -195,14 +119,15 @@ class Plotter:
 
         plt.tight_layout()
         tools.save_plot(self.run_results_path, 'element_analysis_3')
+        # plt.show()
 
     def element_analysis_plots(self):
-        """Genera y guarda las gráficas de análisis de elementos."""
+        """Generates and saves element analysis plots."""
         df = self.materials_data[['bravais_lattice', 'material_name', 
                                   'ICSD', 'fermi_energy', 'is_magnetic', 
                                   'is_superconductor']].copy()
-        df = self._extract_elements_from_dataframe(df)
-        element_df = self._create_element_dataframe(df)
+        df = analysis_utils.extract_elements_from_dataframe(df)
+        element_df = analysis_utils.create_element_dataframe(df)
         superconductors_count, proportion_superconductors = self._calculate_element_statistics(element_df)
 
         top_proportion_superconductors = proportion_superconductors.nlargest(50).sort_values(ascending=False)
@@ -215,9 +140,8 @@ class Plotter:
                                    'Conteo de elementos en materiales\nsuperconductores (Top 50)', 
                                    'element_analysis_2')
         self._plot_top_elements_overall(element_df)
-    
+
     def workflow(self):
-        self.stats_report()
         self.magnetic_properties_plot()
         self.supercon_properties_by_bravais_plot()
         self.element_analysis_plots()
