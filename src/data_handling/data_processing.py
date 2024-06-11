@@ -18,7 +18,7 @@ class DataProcessor:
         self.supercon_data['ICSD'] = self.supercon_data['ICSD'].str.replace('ICSD-', '')
 
     def read_materials_csv(self):
-        self.materials_data = pd.read_csv(self.dos_csv_path)
+        self.materials_data = pd.read_csv(self.dos_csv_path, low_memory=False)
         self.ICSD_preprocessor()
         self.identify_superconductors()
 
