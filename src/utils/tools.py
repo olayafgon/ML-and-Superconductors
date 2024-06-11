@@ -10,15 +10,15 @@ import config
 
 def log(text, save_path, printing = True, create = False):
     """
-    Logs the provided text to a file, creating file if it does not exist, and optionally prints it.
+    Logs the provided text to a file, creating the file if it does not exist, and optionally prints it to the console.
 
-    ARGS:
-        - text (str): The text to be logged.
-        - save_path (str): The path where the log file will be created or updated.
-        - printing (bool, optional, default=True): If True, the log message is also printed to the console.
-        - create (bool, optional, default=False): If True, a new log file is created; otherwise, the log is appended to an existing file.
+    Args:
+        text (str): The text to be logged.
+        save_path (str): The path where the log file will be created or updated.
+        printing (bool, optional, default=True): If True, the log message is also printed to the console.
+        create (bool, optional, default=False): If True, a new log file is created; otherwise, the log is appended to an existing file.
 
-    RETURNS:
+    Returns:
         None
     """
     name = save_path.split('/')[-2]
@@ -36,15 +36,15 @@ def log(text, save_path, printing = True, create = False):
 
 def log_main(text, save_path, printing = True, create = False):
     """
-    Logs the provided text to the main log file and optionally prints it.
+    Logs the provided text to the main log file and optionally prints it to the console.
 
-    ARGS:
-        - text (str): The text to be logged.
-        - save_path (str): The path where the log file will be created or updated.
-        - printing (bool, optional, default=True): If True, the log message is also printed to the console.
-        - create (bool, optional, default=False): If True, a new main log file is created; otherwise, the log is appended to an existing file.
+    Args:
+        text (str): The text to be logged.
+        save_path (str): The path where the log file will be created or updated.
+        printing (bool, optional, default=True): If True, the log message is also printed to the console.
+        create (bool, optional, default=False): If True, a new main log file is created; otherwise, the log is appended to an existing file.
 
-    RETURNS:
+    Returns:
         None
     """
     log_path = os.path.join(save_path, 'log.txt')
@@ -60,28 +60,30 @@ def log_main(text, save_path, printing = True, create = False):
             file.write(str(dt)+': '+text+' \n')
 
 def create_folder(path, delete_old = False):
-    '''
-    Creates a folder in an specific path.  
+    """
+    Creates a folder in a specific path, optionally deleting any existing folder at that location.
 
-    ARGS:
-        - path (str): The path to the folder that needs to be created or checked.
-        - delete_old (bool, default: False) : If True and the folder already exists, it will be deleted before creating a new one.
+    Args:
+        path (str): The path to the folder that needs to be created or checked.
+        delete_old (bool, default: False): If True and the folder already exists, it will be deleted before creating a new one.
 
-    RETURNS:
+    Returns:
         None
-    '''
+    """
     if (delete_old == True) & os.path.exists(path):
         shutil.rmtree(path)
     if not os.path.exists(path):
         os.makedirs(path)
 
 def create_run_results_folder():
-    '''
-    Creates the results folder for the run and return its path.
+    """
+    Creates the results folder for the current run and returns its path.
 
-    RETURNS:
-        - str: Path to the created results folder.
-    '''
+    The folder name is based on the current date and time. A copy of the config.py file is also copied into the results folder.
+
+    Returns:
+        str: Path to the created results folder.
+    """
     all_results_path = config.RESULTS_FOLDER
     run_results_path = os.path.join(all_results_path, str(datetime.datetime.now().strftime('%Y%m%d_%H_%M')))
     create_folder(all_results_path)
@@ -92,23 +94,42 @@ def create_run_results_folder():
 
 def copy_file(source_path, destination_path):
     """
-    This function copy a file from one directory to another
+    Copies a file from one directory to another.
 
-    ARGS:
-        - source_path (str): Path of original file.
-        - destination_path (str): Destination path.
-    
-    RETURNS:
+    Args:
+        source_path (str): Path of the original file.
+        destination_path (str): Destination path.
+
+    Returns:
         None
     """
     shutil.copy(source_path, destination_path)
     print(f"File copied from {source_path} to {destination_path}")
 
 def clean_path(path):
+    """
+    Removes invalid characters from a path string, replacing them with underscores.
+
+    Args:
+        path (str): The path string to clean.
+
+    Returns:
+        str: The cleaned path string.
+    """
     invalid_chars = r'[<>:"/\\|?*]'
     cleaned_path = re.sub(invalid_chars, '_', path)
     return cleaned_path
 
 def save_plot(results_folder_path, figure_name):
+    """
+    Saves a Matplotlib plot to a file in the specified results folder.
+
+    Args:
+        results_folder_path (str): The path to the results folder.
+        figure_name (str): The desired name for the saved plot file.
+
+    Returns:
+        None
+    """
     figure_path = os.path.join(results_folder_path, figure_name)
     plt.savefig(figure_path, bbox_inches='tight')
