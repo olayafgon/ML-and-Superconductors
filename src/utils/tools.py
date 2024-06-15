@@ -158,10 +158,13 @@ def stack_plot_percentages_labels(axes, data):
 def barplot_percentages_labels(axes, data, total = None):
     if total is None:
         total = len(data)
-    for i, patch in enumerate(axes.patches[:len(data)]): 
-        height = patch.get_height() + axes.patches[i + len(data)].get_height() 
+    for i, patch in enumerate(axes.patches[:len(data)]):
+        if i + len(data) < len(axes.patches):
+            height = patch.get_height() + axes.patches[i + len(data)].get_height()
+        else:
+            height = patch.get_height()
         percentage = 100 * height / total
-        axes.annotate(f'{percentage:.1f}%', 
-                    xy=(patch.get_x() + patch.get_width() / 2, height),  
-                    ha='center', va='bottom', fontsize=9, color='black')
+        axes.annotate(f'{percentage:.1f}%',
+                      xy=(patch.get_x() + patch.get_width() / 2, height),
+                      ha='center', va='bottom', fontsize=9, color='black')
 
