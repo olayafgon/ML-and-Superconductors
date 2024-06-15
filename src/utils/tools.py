@@ -139,3 +139,29 @@ def write_to_report(report_file, text):
     with open(report_file, 'a') as f:
         f.write(text)
 
+def stack_plot_percentages_labels(axes, data):
+    for p in axes.patches:
+        width = p.get_width()
+        height = p.get_height()
+        x, y = p.get_xy() 
+
+        percentage = height / data.sum() * 100
+        if height < 0.05 * data.sum(): 
+            axes.text(x + width/2, y + height + 0.01, f'{percentage:.1f}%',  
+                    ha='center', va='bottom', fontsize=10, color='black',
+                    bbox={'facecolor': 'white', 'alpha': 0.5, 'pad': 2})
+        else:
+            axes.text(x + width/2, y + height/2, f'{percentage:.1f}%', 
+                    ha='center', va='center', fontsize=10, color='black',
+                    bbox={'facecolor': 'white', 'alpha': 0.5, 'pad': 2})
+
+def barplot_percentages_labels(axes, data, total = None):
+    if total is None:
+        total = len(data)
+    for i, patch in enumerate(axes.patches[:len(data)]): 
+        height = patch.get_height() + axes.patches[i + len(data)].get_height() 
+        percentage = 100 * height / total
+        axes.annotate(f'{percentage:.1f}%', 
+                    xy=(patch.get_x() + patch.get_width() / 2, height),  
+                    ha='center', va='bottom', fontsize=9, color='black')
+
