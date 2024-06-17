@@ -44,7 +44,7 @@ class Plotter:
         plt.title('Bravais Lattices and Superconducting Properties')
         plt.xlabel('Bravais Lattice')
         plt.ylabel('Number of Samples')
-        plt.legend(title='Superconducting Properties', labels=['Superconductor', 'Non-Superconductor'])
+        plt.legend(title='Superconducting Properties', labels=['Non-Superconductor', 'Superconductor'])
         plt.tight_layout()
         tools.save_plot(self.run_results_path, 'superconducting_properties_by_bravais_lattice')
 
