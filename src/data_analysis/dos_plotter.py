@@ -102,9 +102,6 @@ class DosPlotter:
 
     def _set_icsd_plot_details(self, material_data, dos_values):
         """Sets plot details for ICSD DOS plots."""
-        print('Material information')
-        print(material_data[:6])
-
         center_index = len(dos_values) // 2
         plt.axvline(x=center_index, color='black', linestyle=':')
         plt.axhline(y=0, color='black', linestyle=':')
@@ -113,7 +110,16 @@ class DosPlotter:
         plt.xlabel("Energy - Fermi Energy")
         plt.title("DOS vs Energy ICSD: {}".format(material_data['ICSD']))
         plt.grid(False)
-        plt.ylim(-5, 100)
+        textstr = '\n'.join((
+            f"Material Name: {material_data['material_name']}",
+            f"ICSD: {material_data['ICSD']}",
+            f"Bravais Lattice: {material_data['bravais_lattice']}",
+            f"Is Superconductor: {material_data['is_superconductor']}",
+            f"Fermi Energy: {material_data['fermi_energy']}",
+            f"Magnetic: {material_data['is_magnetic']}",
+        ))
+        props = dict(boxstyle='round', facecolor='whitesmoke', alpha=0.5)
+        plt.text(1.015, 0.5, textstr, transform=plt.gca().transAxes, fontsize=10, va='center', bbox=props)
 
     def plot_dos(self, by='Bravais', method=None, is_supercon=None, filter_bravais=None, ICSD=None):
         """
@@ -134,7 +140,7 @@ class DosPlotter:
                 filename += f"_{'super' if is_supercon else 'nonsuper'}"
             if filter_bravais is not None:
                 filename += f"_{'_'.join(filter_bravais)}"
-            tools.save_plot(self.run_results_path, filename)
+            tools.save_plot(self.plots_path, filename)
 
         elif by == 'ICSD':
             self._plot_icsd_dos(ICSD)
