@@ -2,9 +2,7 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import os
 import seaborn as sns
-import re
 
 pd.set_option('display.max_columns', None)
 
@@ -16,6 +14,9 @@ class Plotter:
     def __init__(self, materials_data, run_results_path):
         self.materials_data = materials_data
         self.run_results_path = run_results_path
+        mpl.rcParams['font.family'] = 'serif'
+        mpl.rcParams['font.serif'] = ['Times New Roman'] 
+        mpl.rcParams['text.usetex'] = False
 
     def magnetic_properties_plot(self):
         grouped_data = self.materials_data.groupby(['is_superconductor', 'is_magnetic']).size()
@@ -42,7 +43,6 @@ class Plotter:
         plt.legend(title='Propiedades Magnéticas', labels=['No Magnético', 'Magnético'])
         plt.tight_layout()
         tools.save_plot(self.run_results_path, 'magnetic_properties')
-        # plt.show()
 
     def supercon_properties_by_bravais_plot(self):
         grouped_data = self.materials_data.groupby(['bravais_lattice', 'is_superconductor']).size()
@@ -64,7 +64,6 @@ class Plotter:
         plt.legend(title='Propiedades Superconductoras', labels=['Superconductor', 'No Superconductor'])
         plt.tight_layout()
         tools.save_plot(self.run_results_path, 'superconducting_properties_by_bravais_lattice')
-        # plt.show()
     
     def _calculate_element_statistics(self, element_df):
         """Calculates element statistics."""
@@ -83,7 +82,6 @@ class Plotter:
         ax.xaxis.grid(True, linestyle='--', linewidth=0.5)
         plt.tight_layout()
         tools.save_plot(self.run_results_path, filename)
-        # plt.show()
 
     def _plot_element_counts(self, counts_data, title, filename):
         """Plots the element counts."""
@@ -95,7 +93,6 @@ class Plotter:
         ax.xaxis.grid(True, linestyle='--', linewidth=0.5)
         plt.tight_layout()
         tools.save_plot(self.run_results_path, filename)
-        # plt.show()
 
     def _plot_top_elements_overall(self, element_df, top_n=25):
         """Plots the most common elements overall."""
@@ -119,7 +116,6 @@ class Plotter:
 
         plt.tight_layout()
         tools.save_plot(self.run_results_path, 'element_analysis_3')
-        # plt.show()
 
     def element_analysis_plots(self):
         """Generates and saves element analysis plots."""
