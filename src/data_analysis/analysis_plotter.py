@@ -7,13 +7,14 @@ from data_analysis import analysis_utils
 sys.path.append('./../')
 from utils import tools
 
-class Plotter:
+class AnalysisPlotter:
     def __init__(self, materials_data, run_results_path):
         self.materials_data = materials_data
         self.run_results_path = run_results_path
         mpl.rcParams['font.family'] = 'serif'
         mpl.rcParams['font.serif'] = ['Times New Roman'] 
         mpl.rcParams['text.usetex'] = False
+        tools.log_main('· MODULE: AnalysisPlotter...', save_path=self.run_results_path)
 
     def _create_stacked_bar_plot(self, grouped_data, title, xlabel, ylabel, legend_title, filename):
         """Creates a stacked bar plot with percentages."""
