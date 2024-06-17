@@ -1,4 +1,5 @@
 import sys
+import os
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
@@ -14,6 +15,8 @@ class AnalysisPlotter:
         mpl.rcParams['font.family'] = 'serif'
         mpl.rcParams['font.serif'] = ['Times New Roman'] 
         mpl.rcParams['text.usetex'] = False
+        self.plots_path = os.path.join(self.run_results_path, 'Analysis_plots')
+        tools.create_folder(self.plots_path, delete_old = True)
         tools.log_main('· MODULE: AnalysisPlotter...', save_path=self.run_results_path)
 
     def _create_stacked_bar_plot(self, grouped_data, title, xlabel, ylabel, legend_title, filename):
@@ -26,7 +29,7 @@ class AnalysisPlotter:
         plt.xticks(rotation=0)
         plt.legend(title=legend_title)
         plt.tight_layout()
-        tools.save_plot(self.run_results_path, filename)
+        tools.save_plot(self.plots_path, filename)
 
     def magnetic_properties_plot(self):
         """Generates and saves magnetic properties plot."""
@@ -44,7 +47,7 @@ class AnalysisPlotter:
         plt.ylabel('Number of Samples')
         plt.legend(title='Superconducting Properties', labels=['Non-Superconductor', 'Superconductor'])
         plt.tight_layout()
-        tools.save_plot(self.run_results_path, 'superconducting_properties_by_bravais_lattice')
+        tools.save_plot(self.plots_path, 'superconducting_properties_by_bravais_lattice')
 
     def _calculate_element_statistics(self, element_df):
         """Calculates element statistics."""
@@ -62,7 +65,7 @@ class AnalysisPlotter:
         plt.ylabel('Element')
         plt.title(title)
         plt.tight_layout()
-        tools.save_plot(self.run_results_path, filename)
+        tools.save_plot(self.plots_path, filename)
 
         plt.figure(figsize=(5, 10))
         ax = sns.barplot(x=proportion_data.values, y=proportion_data.index, palette='coolwarm')
@@ -71,7 +74,7 @@ class AnalysisPlotter:
         plt.ylabel('Element')
         plt.title(title)
         plt.tight_layout()
-        tools.save_plot(self.run_results_path, filename)
+        tools.save_plot(self.plots_path, filename)
 
     def _plot_top_elements_overall(self, element_df, top_n=25):
         """Plots the most common elements overall."""
@@ -86,7 +89,7 @@ class AnalysisPlotter:
         plt.title(f'Most Common Elements in Dataset (Top {top_n})')
         plt.ylim(0, (ax.get_ylim()[1])*1.05)
         plt.tight_layout()
-        tools.save_plot(self.run_results_path, 'element_analysis_3')
+        tools.save_plot(self.plots_path, 'element_analysis_3')
 
     def element_analysis_plots(self):
         """Generates and saves element analysis plots."""
