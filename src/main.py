@@ -2,7 +2,7 @@ import sys
 import time
 
 from data_handling import data_raw_download, data_raw_read, data_processing
-from data_analysis import plotter, reporter
+from data_analysis import analysis_plotter, reporter
 from utils import tools
 
 sys.path.append('./../')
@@ -37,7 +37,7 @@ def main():
     stats_reporter = reporter.StatsReporter(materials_data, run_results_path) 
     stats_reporter.stats_report()
 
-    plotter_instance = plotter.Plotter(materials_data, run_results_path)
+    plotter_instance = analysis_plotter.Plotter(materials_data, run_results_path)
     plotter_instance.workflow()
 
     #END
