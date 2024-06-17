@@ -2,7 +2,7 @@ import sys
 import time
 
 from data_handling import data_raw_download, data_raw_read, data_processing
-from data_analysis import analysis_plotter, reporter
+from data_analysis import analysis_plotter, reporter, dos_plotter
 from utils import tools
 
 sys.path.append('./../')
@@ -34,11 +34,21 @@ def main():
     materials_data, supercon_data = MaterialsProcessor.processor()
 
     #EDA
-    stats_reporter = reporter.StatsReporter(materials_data, run_results_path) 
+    stats_reporter = reporter.StatsReporter(materials_data, run_results_path)
     stats_reporter.stats_report()
+    plotter = analysis_plotter.AnalysisPlotter(materials_data, run_results_path)
+    plotter.workflow()
 
-    plotter_instance = analysis_plotter.Plotter(materials_data, run_results_path)
-    plotter_instance.workflow()
+    Dos_Plotter = dos_plotter.DosPlotter(materials_data, run_results_path)
+    Dos_Plotter.plot_dos(by='Bravais', method='average', is_supercon=True)
+    for bravais in config.STRUCTURES:
+        Dos_Plotter.plot_dos(by='Bravais', method='average', is_supercon=None, filter_bravais=[bravais]) 
+    Dos_Plotter.plot_dos(by='Bravais', method='median', is_supercon=False)
+    for bravais in config.STRUCTURES:
+        Dos_Plotter.plot_dos(by='Bravais', method='median', is_supercon=None, filter_bravais=[bravais]) 
+    Dos_Plotter.plot_dos(by='ICSD', ICSD=189400)
+    Dos_Plotter.plot_dos(by='ICSD', ICSD=608582)
+    Dos_Plotter.plot_dos(by='ICSD', ICSD=609426)
 
     #END
     end_ = time.time()
