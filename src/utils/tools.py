@@ -133,6 +133,7 @@ def save_plot(results_folder_path, figure_name):
     """
     figure_path = os.path.join(results_folder_path, figure_name)
     plt.savefig(figure_path, bbox_inches='tight')
+    plt.close()
 
 def write_to_report(report_file, text):
     """Writes text to the report file."""
