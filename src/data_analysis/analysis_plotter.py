@@ -34,7 +34,8 @@ class AnalysisPlotter:
     def magnetic_properties_plot(self):
         """Generates and saves magnetic properties plot."""
         grouped_data = self.materials_data.groupby(['is_superconductor', 'is_magnetic']).size()
-        self._create_stacked_bar_plot(grouped_data, 'Magnetic Properties', 'Material', 'Number of Samples', 'Magnetic Properties', 'magnetic_properties')
+        self._create_stacked_bar_plot(grouped_data, 'Propiedades superconductoras y magnéticas', 'Propiedad superconductora', 
+                                      'Número de materiales', 'Propiedad magnética', 'superconducting_magnetic_properties')
 
     def supercon_properties_by_bravais_plot(self):
         """Generates and saves superconductor properties by bravais lattice plot."""
@@ -42,10 +43,10 @@ class AnalysisPlotter:
         total_samples = len(self.materials_data)
         ax = grouped_data.unstack(fill_value=0).plot(kind='bar', stacked=True, colormap='Set2', figsize=(10, 5))
         tools.barplot_percentages_labels(ax, grouped_data.unstack(fill_value=0), total=total_samples)
-        plt.title('Bravais Lattices and Superconducting Properties')
-        plt.xlabel('Bravais Lattice')
-        plt.ylabel('Number of Samples')
-        plt.legend(title='Superconducting Properties', labels=['Non-Superconductor', 'Superconductor'])
+        plt.title('Superconductividad y redes de Bravais')
+        plt.xlabel('Red de Bravais')
+        plt.ylabel('Número de materiales')
+        plt.legend(title='Propiedad superconductora', labels=['No superconductor', 'Superconductor'])
         plt.tight_layout()
         tools.save_plot(self.plots_path, 'superconducting_properties_by_bravais_lattice')
 
@@ -56,25 +57,27 @@ class AnalysisPlotter:
         proportion_superconductors = (superconductors_count / total_count).fillna(0)
         return superconductors_count, proportion_superconductors
 
-    def _plot_element_statistics(self, counts_data, proportion_data, title, filename):
+    def _plot_element_statistics(self, counts_data, proportion_data, n=30):
         """Plots element statistics."""
-        plt.figure(figsize=(5, 10))
-        ax = sns.barplot(x=counts_data.values, y=counts_data.index, palette='coolwarm')
+        plt.figure(figsize=(5, 8))
+        top_count = counts_data.nlargest(n)
+        ax = sns.barplot(x=top_count.values, y=top_count.index, palette='coolwarm')
         ax.xaxis.grid(True, linestyle='--', linewidth=0.5)
-        plt.xlabel('Number of times element appears')
-        plt.ylabel('Element')
-        plt.title(title)
+        plt.xlabel('Nº de superconductores con el elemento')
+        plt.ylabel('Elemento químico')
+        plt.title(f'Frecuencia de elementos químicos en\nmateriales superconductores (Top {n})')
         plt.tight_layout()
-        tools.save_plot(self.plots_path, filename)
+        tools.save_plot(self.plots_path, 'supercon_elements_count')
 
-        plt.figure(figsize=(5, 10))
-        ax = sns.barplot(x=proportion_data.values, y=proportion_data.index, palette='coolwarm')
+        plt.figure(figsize=(5, 8))
+        top_proportion = proportion_data.nlargest(n)
+        ax = sns.barplot(x=top_proportion.values, y=top_proportion.index, palette='coolwarm')
         ax.xaxis.grid(True, linestyle='--', linewidth=0.5)
-        plt.xlabel('Number of elements present / Total elements')
-        plt.ylabel('Element')
-        plt.title(title)
+        plt.xlabel('Nº de superconductores con el elemento / Nº de materiales con el elemento')
+        plt.ylabel('Elemento químico')
+        plt.title(f'Proporción de superconductores para\ncada elemento químico (Top {n})')
         plt.tight_layout()
-        tools.save_plot(self.plots_path, filename)
+        tools.save_plot(self.plots_path, 'supercon_elements_proportion')
 
     def _plot_top_elements_overall(self, element_df, top_n=25):
         """Plots the most common elements overall."""
@@ -84,12 +87,12 @@ class AnalysisPlotter:
         plt.figure(figsize=(12, 5))
         ax = sns.barplot(x=top_elements.index, y=top_elements.values, palette='coolwarm')
         tools.barplot_percentages_labels(ax, top_elements, total=total_elements)
-        plt.ylabel('Number of times element appears')
-        plt.xlabel('Element')
-        plt.title(f'Most Common Elements in Dataset (Top {top_n})')
+        plt.ylabel('Nº de materiales')
+        plt.xlabel('Elemento químico')
+        plt.title(f'Elementos químicos más comunes en el conjunto de datos (Top {top_n})')
         plt.ylim(0, (ax.get_ylim()[1])*1.05)
         plt.tight_layout()
-        tools.save_plot(self.plots_path, 'element_analysis_3')
+        tools.save_plot(self.plots_path, 'general_elements_count')
 
     def element_analysis_plots(self):
         """Generates and saves element analysis plots."""
@@ -103,9 +106,7 @@ class AnalysisPlotter:
         top_proportion_superconductors = proportion_superconductors.nlargest(50).sort_values(ascending=False)
         top_superconductors_counts = superconductors_count.nlargest(50).sort_values(ascending=False)
 
-        self._plot_element_statistics(top_superconductors_counts, top_proportion_superconductors, 
-                                      'Element Statistics in Superconducting Materials (Top 50)',
-                                      'element_analysis_1')
+        self._plot_element_statistics(top_superconductors_counts, top_proportion_superconductors)
         self._plot_top_elements_overall(element_df)
 
     def workflow(self):
