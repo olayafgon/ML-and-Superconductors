@@ -3,6 +3,7 @@ import time
 
 from data_handling import data_raw_download, data_raw_read, data_processing
 from data_analysis import analysis_plotter, reporter, dos_plotter
+from pipeline import eda_pipeline
 from utils import tools
 
 sys.path.append('./../')
@@ -10,6 +11,8 @@ import config
 
 _DATA_DOWNLOAD = config.DATA_DOWNLOAD
 _READ_DATA_RAW = config.READ_DATA_RAW
+_RUN_EDA = config.RUN_EDA
+
 
 def main():
 
@@ -21,34 +24,22 @@ def main():
 
     # Download or check data
     if _DATA_DOWNLOAD:
-        data_dowloading = data_raw_download.DataDownload(run_results_path)
-        data_dowloading.data_download_workflow()
+        Data_Dowload = data_raw_download.DataDownload(run_results_path)
+        Data_Dowload.data_download_workflow()
 
     # Read and save to csv raw_data
     if _READ_DATA_RAW:
-        raw_data_reading = data_raw_read.MaterialRawDataRead(run_results_path)
-        raw_data_reading.data_raw_read_workflow()
+        Material_Raw_Data_Read = data_raw_read.MaterialRawDataRead(run_results_path)
+        Material_Raw_Data_Read.data_raw_read_workflow()
     
     # Procces data
-    MaterialsProcessor = data_processing.DataProcessor(run_results_path)
-    materials_data, supercon_data = MaterialsProcessor.processor()
+    Data_Processor = data_processing.DataProcessor(run_results_path)
+    materials_data, supercon_data = Data_Processor.processor()
 
     #EDA
-    stats_reporter = reporter.StatsReporter(materials_data, run_results_path)
-    stats_reporter.stats_report()
-    plotter = analysis_plotter.AnalysisPlotter(materials_data, run_results_path)
-    plotter.workflow()
-
-    Dos_Plotter = dos_plotter.DosPlotter(materials_data, run_results_path)
-    Dos_Plotter.plot_dos(by='Bravais', method='average', is_supercon=True)
-    for bravais in config.STRUCTURES:
-        Dos_Plotter.plot_dos(by='Bravais', method='average', is_supercon=None, filter_bravais=[bravais]) 
-    Dos_Plotter.plot_dos(by='Bravais', method='median', is_supercon=False)
-    for bravais in config.STRUCTURES:
-        Dos_Plotter.plot_dos(by='Bravais', method='median', is_supercon=None, filter_bravais=[bravais]) 
-    Dos_Plotter.plot_dos(by='ICSD', ICSD=189400)
-    Dos_Plotter.plot_dos(by='ICSD', ICSD=608582)
-    Dos_Plotter.plot_dos(by='ICSD', ICSD=609426)
+    if _RUN_EDA:
+        EDA_Pipeline = eda_pipeline.EDAPipeline(materials_data, run_results_path)
+        EDA_Pipeline.eda_workflow()
 
     #END
     end_ = time.time()
