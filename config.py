@@ -31,13 +31,17 @@ EFERMI_GRID_POINTS = 1999 # Esto funciona para limite en 15, recalcular para otr
 
 # ··················· EDA ···················
 # True si quieres que se ejecute el EDA
-RUN_EDA = True
+RUN_EDA = False
 # True si quieres que se guarden representaciones relativas a las DOS
 DOS_PLOTS = True
 # Lista de materiales a plotear la DOS, si no None
 ICSD_PLOTS = [189400, 608582, 609426]
 
 # ··················· MODELO ···················
+# Nombre de la columna target
+TARGET_COLUMN = 'is_superconductor'
+# Métrica de evaluacion
+EVAL_METRIC = 'f1'
 # Incluya en la lista los modelos que quiera explorar:
 #   - 'Basic_Autogluon': Autogluon sin procesados especiales
 #   - 'Resampling_Autogluon': Autogluon para varios remuestreos
@@ -45,6 +49,8 @@ ICSD_PLOTS = [189400, 608582, 609426]
 #   - 'Hiperparameters': Búsqueda de mejores hiperparámetros
 #   - None: No explora nada de lo anterior
 MODEL_EXPLORATION = ['Basic_Autogluon', 'Resampling_Autogluon', 'PCA_Resampling_Autogluon', 'Hiperparameters']
+# Para 'PCA_Resampling_Autogluon' lista de numero de PCAs que se quiere explorar
+PCA_COMPONENTS_LIST = [2, 5, 10, 20, 30, 40, 50, 75, 100, 150, 200, 250, 300, 400, 500] 
 # True si quieres entrenar un modelo final
 FINAL_MODEL_TRAINING = True
 # Modelo a entrenar. Implementados:
