@@ -103,7 +103,7 @@ class AutogluonTraining:
             X_train, y_train = resampling_technique.fit_resample(X_train, y_train)
         return X_train, X_test, y_train, y_test
     
-    def autogluon_run(self, X, y, method_path, resampling_technique, n_PCA=None):
+    def train_and_evaluate_autogluon(self, X, y, method_path, resampling_technique, n_PCA=None):
         """
         Trains and evaluates an AutoGluon model with the specified parameters.
 
@@ -135,16 +135,16 @@ class AutogluonTraining:
         if self.method == 'Basic_Autogluon':
             X, y = self.Data_Processor.basic_processing(X, y)
             autogluon_path = os.path.join(self.run_results_path, self.method)
-            self.autogluon_run(X, y, autogluon_path, None)
+            self.train_and_evaluate_autogluon(X, y, autogluon_path, None)
         if self.method == 'Resampling_Autogluon':
             X, y = self.Data_Processor.basic_processing(X, y)
             for technique_name, technique in self.resampling_techniques:
                 autogluon_path = os.path.join(self.run_results_path, self.method, technique_name)
-                self.autogluon_run(X, y, autogluon_path, technique)
+                self.train_and_evaluate_autogluon(X, y, autogluon_path, technique)
         if self.method == 'PCA_Resampling_Autogluon':
             for n_PCA in self.pca_components_list:
                 X, pca_columns = self.Data_Processor.apply_pca(n_PCA, X)
                 X, y = self.Data_Processor.basic_processing(X, y, pca_columns)
                 for technique_name, technique in self.resampling_techniques:
                     autogluon_path = os.path.join(self.run_results_path, self.method, str(n_PCA), technique_name)
-                    self.autogluon_run(X, y, autogluon_path, technique, n_PCA=n_PCA)
+                    self.train_and_evaluate_autogluon(X, y, autogluon_path, technique, n_PCA=n_PCA)
