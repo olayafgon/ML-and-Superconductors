@@ -1,10 +1,6 @@
 import sys
 import os
 import pandas as pd
-from sklearn.preprocessing import RobustScaler
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score
 from xgboost import XGBClassifier
@@ -24,7 +20,6 @@ class HiperparameterExploration:
         self.run_results_path = run_results_path
         self.method = method
         self.Data_Processor = Data_Processor
-        self.target_column = config.TARGET_COLUMN
         self.eval_metric = config.EVAL_METRIC
         self.n_iter = config.HIPERPARAMETER_EXPLO_ITER
         self.n_pca = config.HIPERPARAMETER_EXPLO_PCA
@@ -36,7 +31,7 @@ class HiperparameterExploration:
             'subsample': Real(0.5, 1),          # Subsample ratio of training instances
             'colsample_bytree': Real(0.5, 1)   # Subsample ratio of columns
             }
-        self.search_space_xgb = {
+        self.search_space_random = {
             'learning_rate': [0.01, 0.1, 0.3, 0.5, 0.7, 0.85, 1.0],
             'max_depth': [3, 5, 10, 15, 20, 30],
             'n_estimators': [50, 100, 200, 500, 700, 1000, 1500],
@@ -106,15 +101,15 @@ class HiperparameterExploration:
             file.write(f"Matriz de confusión:\n{confusion_matrix_result}\n")
 
     def run_search(self, X_train, y_train):
+        self.random_search_xgb = self.run_search_random(X_train, y_train, XGBClassifier, 'RandomizedSearchCV (XGBoost)', 
+                                                        self.search_space_random, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
+        self.bayes_search_xgb = self.run_search_bayes(X_train, y_train, XGBClassifier, 'BayesSearchCV (XGBoost)', 
+                                                      self.search_space_bayes, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
         self.random_search_lgbm = self.run_search_random(X_train, y_train, LGBMClassifier, 'RandomizedSearchCV (LightGBM)', 
-                                                         self.search_space_xgb, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
-        self.bayes_search_lgbm = self.run_search_bayes(X_train, y_train, LGBMClassifier, 'BayesSearchCV (LightGBM)', self.search_space_bayes,
-                                                       self.search_space_xgb, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
-        self.random_search_xgb = self.run_search_random(X_train, y_train, XGBClassifier, 'RandomizedSearchCV (XGBoost)', self.search_space_xgb,
-                                                        self.search_space_xgb, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
-        self.bayes_search_xgb = self.run_search_bayes(X_train, y_train, XGBClassifier, 'BayesSearchCV (XGBoost)', self.search_space_bayes,
-                                                      self.search_space_xgb, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
-    
+                                                         self.search_space_random, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
+        self.bayes_search_lgbm = self.run_search_bayes(X_train, y_train, LGBMClassifier, 'BayesSearchCV (LightGBM)', 
+                                                       self.search_space_bayes, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
+        
     def evaluate_search_method(self, X_test, y_test):
         for search_method, name in [(self.bayes_search_lgbm, 'BayesSearchCV (LightGBM)'), 
                                     (self.random_search_lgbm, 'RandomizedSearchCV (LightGBM)'),
