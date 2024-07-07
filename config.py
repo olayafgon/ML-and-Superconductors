@@ -46,11 +46,15 @@ EVAL_METRIC = 'f1'
 #   - 'Basic_Autogluon': Autogluon sin procesados especiales
 #   - 'Resampling_Autogluon': Autogluon para varios remuestreos
 #   - 'PCA_Resampling_Autogluon': Autogluon para varios remuestreos y PCAs (largo tiempo)
-#   - 'Hiperparameters': Búsqueda de mejores hiperparámetros
+#   - 'Hiperparameters': Búsqueda de mejores hiperparámetros con varios métodos
 #   - None: No explora nada de lo anterior
-MODEL_EXPLORATION = ['Basic_Autogluon', 'Resampling_Autogluon', 'PCA_Resampling_Autogluon', 'Hiperparameters']
+MODEL_EXPLORATION = ['Basic_Autogluon', 'Resampling_Autogluon', 'PCA_Resampling_Autogluon', 'Hiperparameters_Exploration']
 # Para 'PCA_Resampling_Autogluon' lista de numero de PCAs que se quiere explorar
 PCA_COMPONENTS_LIST = [2, 5, 10, 20, 30, 40, 50, 75, 100, 150, 200, 250, 300, 400, 500] 
+# Numero de iteraciones, PCAs y cv en la búsqueda de hiperámetros (en la exploración)
+HIPERPARAMETER_EXPLO_ITER = 150
+HIPERPARAMETER_EXPLO_PCA = 10
+HIPERPARAMETER_EXPLO_CV = 5
 # True si quieres entrenar un modelo final
 FINAL_MODEL_TRAINING = True
 # Modelo a entrenar. Implementados:
