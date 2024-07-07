@@ -18,7 +18,7 @@ To set up the environment for the project, please follow these steps:
 4. **Create the Conda Environment**: Use the provided `environment.yml` file to create an identical environment on your machine. This file includes all the necessary Python versions and libraries required for the project. Run the following command:
 `conda env create -f environment.yml` This will create a new Conda environment named loyalty.
 
-5. **Activate the Environment**: Once the environment setup is complete, activate it using: `conda activate loyalty`.
+5. **Activate the Environment**: Once the environment setup is complete, activate it using: `conda activate superconductor`.
 
 ## Running the Code
 
