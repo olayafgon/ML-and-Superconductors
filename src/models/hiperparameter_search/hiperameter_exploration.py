@@ -16,10 +16,32 @@ import config
 from utils import tools
 
 class HiperparameterExploration:
-    def __init__(self, run_results_path, method, Data_Processor):
+    """
+    A class for performing hyperparameter exploration using Bayesian and Random Search for XGBoost and LightGBM classifiers.
+
+    Attributes:
+        run_results_path (str): The path to save the run results.
+        method (str): The hyperparameter exploration method to use.
+        Data_Processor (DataPreprocessor): The data preprocessor object.
+        eval_metric (str): The evaluation metric to use.
+        n_iter (int): The number of iterations for hyperparameter search.
+        n_pca (int): The number of PCA components to use.
+        n_cv (int): The number of cross-validation folds.
+        search_space_bayes (dict): The hyperparameter search space for Bayesian Search.
+        search_space_random (dict): The hyperparameter search space for Random Search.
+    """
+    def __init__(self, run_results_path, method, data_processor):
+        """
+        Constructs all the necessary attributes for the HiperparameterExploration object.
+
+        ARGS:
+            run_results_path (str): The path to save the run results.
+            method (str): The hyperparameter exploration method to use.
+            data_processor (DataPreprocessor): The data preprocessor object.
+        """
         self.run_results_path = run_results_path
         self.method = method
-        self.Data_Processor = Data_Processor
+        self.data_processor = data_processor
         self.eval_metric = config.EVAL_METRIC
         self.n_iter = config.HIPERPARAMETER_EXPLO_ITER
         self.n_pca = config.HIPERPARAMETER_EXPLO_PCA
@@ -42,6 +64,19 @@ class HiperparameterExploration:
     
     @staticmethod
     def split_resample_data(X, y, resampling_technique=None, test_size=0.2, random_state=42):
+        """
+        Splits the data into training and test sets and applies resampling if specified.
+
+        ARGS:
+            X (pd.DataFrame): The features data.
+            y (pd.Series): The target data.
+            resampling_technique (object, optional): The resampling technique to use. Defaults to None.
+            test_size (float, optional): The proportion of the data to use for testing. Defaults to 0.2.
+            random_state (int, optional): The random seed to use for splitting the data. Defaults to 42.
+
+        RETURNS:
+            tuple: A tuple containing the training and test features and target.
+        """
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
         if resampling_technique!=None:
             X_train, y_train = resampling_technique.fit_resample(X_train, y_train)
@@ -49,6 +84,22 @@ class HiperparameterExploration:
 
     @staticmethod
     def run_search_bayes(X, y, model_class, name, search_space, n_iter = 100, scoring = 'f1', cv=5):
+        """
+        Performs Bayesian Optimization for hyperparameter tuning using the given model and search space.
+
+        ARGS:
+            X (pd.DataFrame): The features data.
+            y (pd.Series): The target data.
+            model_class (class): The machine learning model class to use (e.g., XGBClassifier).
+            name (str): The name of the search method (for reporting).
+            search_space (dict): The hyperparameter search space for Bayesian Search.
+            n_iter (int, optional): The number of iterations for hyperparameter search. Defaults to 100.
+            scoring (str, optional): The evaluation metric to use for scoring. Defaults to 'f1'.
+            cv (int, optional): The number of cross-validation folds. Defaults to 5.
+
+        RETURNS:
+            object: The fitted BayesSearchCV object.
+        """
         search_method = BayesSearchCV(
             estimator=model_class(),
             search_spaces=search_space,
@@ -65,6 +116,22 @@ class HiperparameterExploration:
 
     @staticmethod
     def run_search_random(X, y, model_class, name, search_space, n_iter = 100, scoring = 'f1', cv=5):
+        """
+        Performs Random Search for hyperparameter tuning using the given model and search space.
+
+        ARGS:
+            X (pd.DataFrame): The features data.
+            y (pd.Series): The target data.
+            model_class (class): The machine learning model class to use (e.g., LGBMClassifier).
+            name (str): The name of the search method (for reporting).
+            search_space (dict): The hyperparameter search space for Random Search.
+            n_iter (int, optional): The number of iterations for hyperparameter search. Defaults to 100.
+            scoring (str, optional): The evaluation metric to use for scoring. Defaults to 'f1'.
+            cv (int, optional): The number of cross-validation folds. Defaults to 5.
+
+        RETURNS:
+            object: The fitted RandomizedSearchCV object.
+        """
         search_method = RandomizedSearchCV(
             estimator=model_class(),
             param_distributions=search_space,
@@ -81,6 +148,17 @@ class HiperparameterExploration:
 
     @staticmethod
     def report_eval_metrics(best_param, model, X_test, y_test, name, report_path):
+        """
+        Evaluates the given model on the test set and reports the results.
+
+        ARGS:
+            best_param (dict): The best hyperparameters found during the search.
+            model (object): The fitted machine learning model.
+            X_test (pd.DataFrame): The test features.
+            y_test (pd.Series): The test target.
+            name (str): The name of the search method used (for reporting).
+            report_path (str): The directory to save the report.
+        """
         y_pred = model.predict(X_test)
 
         accuracy = accuracy_score(y_test, y_pred)
@@ -101,6 +179,13 @@ class HiperparameterExploration:
             file.write(f"Matriz de confusión:\n{confusion_matrix_result}\n")
 
     def run_search(self, X_train, y_train):
+        """
+        Executes the selected hyperparameter search methods (Random and Bayesian) for both XGBoost and LightGBM.
+
+        ARGS:
+            X_train (pd.DataFrame): The training features.
+            y_train (pd.Series): The training target.
+        """
         self.random_search_xgb = self.run_search_random(X_train, y_train, XGBClassifier, 'RandomizedSearchCV (XGBoost)', 
                                                         self.search_space_random, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
         self.bayes_search_xgb = self.run_search_bayes(X_train, y_train, XGBClassifier, 'BayesSearchCV (XGBoost)', 
@@ -111,6 +196,13 @@ class HiperparameterExploration:
                                                        self.search_space_bayes, n_iter = self.n_iter, scoring = self.eval_metric, cv=self.n_cv)
         
     def evaluate_search_method(self, X_test, y_test):
+        """
+        Evaluates each search method (Random, Bayesian) for both XGBoost and LightGBM on the test set.
+
+        ARGS:
+            X_test (pd.DataFrame): The test features.
+            y_test (pd.Series): The test target.
+        """
         for search_method, name in [(self.bayes_search_lgbm, 'BayesSearchCV (LightGBM)'), 
                                     (self.random_search_lgbm, 'RandomizedSearchCV (LightGBM)'),
                                     (self.bayes_search_xgb, 'BayesSearchCV (XGBoost)'),
@@ -121,9 +213,12 @@ class HiperparameterExploration:
             self.report_eval_metrics(best_param, best_model, X_test, y_test, name, report_path)
             
     def hiperparameter_exploration_run(self):
-        X, y = self.Data_Processor.preprocess_data()
-        X, pca_columns = self.Data_Processor.apply_pca(self.n_pca, X)
-        X, y = self.Data_Processor.basic_processing(X, y, pca_columns)
+        """
+        Executes the complete hyperparameter exploration pipeline, including preprocessing, searching, and evaluating.
+        """
+        X, y = self.data_processor.preprocess_data()
+        X, pca_columns = self.data_processor.apply_pca(self.n_pca, X)
+        X, y = self.data_processor.basic_processing(X, y, pca_columns)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
         self.run_search(X_train, y_train)
         self.evaluate_search_method(X_test, y_test)
