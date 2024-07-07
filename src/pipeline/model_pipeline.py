@@ -23,10 +23,10 @@ class ModelPipeline:
                 Data_Processor = data_model_processor.DataPreprocessor(self.materials_data)
                 if method != 'Hiperparameters_Exploration':
                     Autogluon_Training = autogluon_models.AutogluonTraining(self.run_results_path, method, Data_Processor)
-                    Autogluon_Training.autogluon_training_workflow()
+                    Autogluon_Training.autogluon_training_run()
                 elif method == 'Hiperparameters_Exploration':
                     Hiperameter_Exploration = hiperameter_exploration.HiperparameterExploration(self.run_results_path, method, Data_Processor)
-                    Hiperameter_Exploration.hiperparameter_exploration_workflow()
+                    Hiperameter_Exploration.hiperparameter_exploration_run()
         else:
             tools.log_main('· Skipping model exploration...', save_path=self.run_results_path)
 

@@ -120,7 +120,7 @@ class HiperparameterExploration:
             report_path = os.path.join(self.run_results_path, self.method)
             self.report_eval_metrics(best_param, best_model, X_test, y_test, name, report_path)
             
-    def hiperparameter_exploration_workflow(self):
+    def hiperparameter_exploration_run(self):
         X, y = self.Data_Processor.preprocess_data()
         X, pca_columns = self.Data_Processor.apply_pca(self.n_pca, X)
         X, y = self.Data_Processor.basic_processing(X, y, pca_columns)

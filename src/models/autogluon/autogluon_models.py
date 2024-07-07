@@ -127,7 +127,7 @@ class AutogluonTraining:
         print('\n ···················································\n')
         tools.log_main(f'    Resampling {resampling_technique} - PCA {n_PCA}: Performance {performance}', save_path=self.run_results_path)
 
-    def autogluon_training_workflow(self):
+    def autogluon_training_run(self):
         """
         Executes the AutoGluon training workflow based on the chosen method.
         """
