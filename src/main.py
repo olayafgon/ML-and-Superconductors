@@ -3,7 +3,7 @@ import time
 
 from data_handling import data_raw_download, data_raw_read, data_processing
 from data_analysis import analysis_plotter, reporter, dos_plotter
-from pipeline import eda_pipeline
+from pipeline import eda_pipeline, model_pipeline
 from utils import tools
 
 sys.path.append('./../')
@@ -40,6 +40,10 @@ def main():
     if _RUN_EDA:
         EDA_Pipeline = eda_pipeline.EDAPipeline(materials_data, run_results_path)
         EDA_Pipeline.eda_workflow()
+
+    # Model exploration
+    Model_Pipeline = model_pipeline.ModelPipeline(materials_data, run_results_path)
+    Model_Pipeline.model_workflow()
 
     #END
     end_ = time.time()
