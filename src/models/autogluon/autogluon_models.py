@@ -45,6 +45,7 @@ class AutogluonTraining:
             ("RandomOverSampler", RandomOverSampler()),
             ("SMOTE", SMOTE())]
         self.pca_components_list = config.PCA_COMPONENTS_LIST
+        tools.log_main(f'  - Method: {self.method}', save_path=self.run_results_path)
 
     def process_data(self):
         self.data = self.materials_data.copy()
@@ -114,7 +115,7 @@ class AutogluonTraining:
         X_pca = pd.concat([X.loc[:, :'is_magnetic'].reset_index(drop=True), X_pca_2.reset_index(drop=True)], axis=1)
         return X_pca, pca_columns
 
-    def autogluon_run(self, X, y, method_path, resampling_technique):
+    def autogluon_run(self, X, y, method_path, resampling_technique, n_PCA=None):
         autogluon_path = os.path.join(method_path, 'Autogluon')
         X_train, X_test, y_train, y_test = self.split_resample_data(X, y, resampling_technique=resampling_technique, test_size=0.2, random_state=42)
         train_data, test_data = self.tabular_train_test(X_train, X_test, y_train, y_test)
@@ -125,6 +126,7 @@ class AutogluonTraining:
         leaderboard = predictor.leaderboard(TabularDataset(test_data), extra_metrics=['accuracy', 'roc_auc', 'precision', 'recall'], silent=True)
         self.save_autogluon_results(performance, leaderboard, method_path)
         print('\n ···················································\n')
+        tools.log_main(f'    Resampling {resampling_technique} - PCA {n_PCA}: Performance {performance}', save_path=self.run_results_path)
 
     def autogluon_training_workflow(self):
         self.process_data()
@@ -147,4 +149,4 @@ class AutogluonTraining:
                 X, y = self.basic_processing(X, y, pca_columns)
                 for technique_name, technique in self.resampling_techniques:
                     autogluon_path = os.path.join(self.run_results_path, self.method, str(n_PCA), technique_name)
-                    self.autogluon_run(X, y, autogluon_path, technique)
+                    self.autogluon_run(X, y, autogluon_path, technique, n_PCA=n_PCA)
