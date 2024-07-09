@@ -89,7 +89,7 @@ def create_run_results_folder():
     create_folder(all_results_path)
     create_folder(run_results_path)
     shutil.copy('../config.py', run_results_path)
-    log_main(f'MODULE: Results folder created: {run_results_path}', save_path=run_results_path)
+    log_main(f'Results folder created: {run_results_path}', save_path=run_results_path)
     return run_results_path
 
 def copy_file(source_path, destination_path):
