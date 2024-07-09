@@ -147,7 +147,7 @@ class HiperparameterExploration:
         return search_method
 
     @staticmethod
-    def report_eval_metrics(best_param, model, X_test, y_test, name, report_path):
+    def report_eval_metrics(best_param, model, X_test, y_test, name, report_path, run_results_path):
         """
         Evaluates the given model on the test set and reports the results.
 
@@ -178,6 +178,10 @@ class HiperparameterExploration:
             file.write(f"F1-score: {f1:.4f}\n")
             file.write(f"AUC: {auc:.4f}\n")
             file.write(f"Matriz de confusión:\n{confusion_matrix_result}\n")
+        
+        tools.log_main(f'   - Method: {name}', save_path=run_results_path)
+        tools.log_main(f'     F1-score: {f1:.4f}', save_path=run_results_path)
+        tools.log_main(f'     Best Params: {best_param}', save_path=run_results_path)
 
     def run_search(self, X_train, y_train):
         """
@@ -211,7 +215,7 @@ class HiperparameterExploration:
             best_model = search_method.best_estimator_
             best_param = search_method.best_params_
             report_path = os.path.join(self.run_results_path, self.method)
-            self.report_eval_metrics(best_param, best_model, X_test, y_test, name, report_path)
+            self.report_eval_metrics(best_param, best_model, X_test, y_test, name, report_path, self.run_results_path)
             
     def hiperparameter_exploration_run(self):
         """
