@@ -7,7 +7,7 @@ from utils import tools
 from models.data_model_processing import data_model_processor
 from models.autogluon import autogluon_models
 from models.hiperparameter_search import hiperameter_exploration
-from models.final_model import model_training
+from models.final_model import model_training, model_evaluation
 
 class ModelPipeline:
     def __init__(self, materials_data, run_results_path):
@@ -37,6 +37,14 @@ class ModelPipeline:
             self.final_model, self.X_test, self.y_test = Model_Training.model_training_run()
         else:
             tools.log_main('· MODULE: Skipping final model training...', save_path=self.run_results_path)
+            
+    def perform_model_evaluation(self):
+        if config.FINAL_MODEL_TRAINING:
+            tools.log_main('· MODULE: Starting model evaluation...', save_path=self.run_results_path)
+            Model_Evaluation = model_evaluation.ModelEvaluation(self.run_results_path, self.final_model, self.X_test, self.y_test)
+            Model_Evaluation.model_training_run()
+        else:
+            tools.log_main('· MODULE: Skipping final model evaluation...', save_path=self.run_results_path)
             
 
     def model_workflow(self):
