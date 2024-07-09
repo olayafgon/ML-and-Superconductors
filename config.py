@@ -48,11 +48,11 @@ EVAL_METRIC = 'f1'
 #   - 'PCA_Resampling_Autogluon': Autogluon para varios remuestreos y PCAs (largo tiempo)
 #   - 'Hiperparameters': Búsqueda de mejores hiperparámetros con varios métodos
 #   - None: No explora nada de lo anterior
-MODEL_EXPLORATION = ['Basic_Autogluon', 'Resampling_Autogluon', 'PCA_Resampling_Autogluon', 'Hiperparameters_Exploration']
+MODEL_EXPLORATION = None # ['Basic_Autogluon', 'Resampling_Autogluon', 'PCA_Resampling_Autogluon', 'Hiperparameters_Exploration']
 # Para 'PCA_Resampling_Autogluon' lista de numero de PCAs que se quiere explorar
-PCA_COMPONENTS_LIST = [2, 5, 10, 20, 30, 40, 50, 75, 100, 150, 200, 250, 300, 400, 500] 
+PCA_COMPONENTS_LIST = [2, 5, 10, 20, 30, 40, 50, 75, 100, 150, 200, 250, 300, 400, 500] #
 # Numero de iteraciones, PCAs y cv en la búsqueda de hiperámetros (en la exploración)
-HIPERPARAMETER_EXPLO_ITER = 150
+HIPERPARAMETER_EXPLO_ITER = 150 #150
 HIPERPARAMETER_EXPLO_PCA = 10
 HIPERPARAMETER_EXPLO_CV = 5
 # True si quieres entrenar un modelo final
@@ -63,7 +63,6 @@ FINAL_MODEL_TRAINING = True
 FINAL_MODEL = 'XGBClassifier'
 # Hiperparámetros:
 #   - 'Default': por defecto (solo para XGBClassifier) (FINAL_MODEL_DEFAULT_HIPERPARAMETERS)
-#   - 'Searched': hiperparámetros para MODEL_EXPLORATION = ['Hiperparameters']
 #   - 'Custom': incluye tus parámetros (FINAL_MODEL_CUSTOM_HIPERPARAMETERS)
 FINAL_MODEL_HIPERPARAMETERS = 'Default'
 FINAL_MODEL_DEFAULT_HIPERPARAMETERS = {
@@ -78,5 +77,10 @@ FINAL_MODEL_DEFAULT_HIPERPARAMETERS = {
 }
 FINAL_MODEL_CUSTOM_HIPERPARAMETERS = None
 # None si no quieres usar PCAs, int si quieres usarlos
-PCA_NUMBER = 10
+FINAL_MODEL_PCA_NUMBER = 10
+# Resampleo a usar. Implementados:
+#   - None: Ninguno
+#   - 'RandomOverSampler'
+#   - 'RandomUnderSampler'
+FINAL_MODEL_RESAMPLER = 'RandomOverSampler'
 
