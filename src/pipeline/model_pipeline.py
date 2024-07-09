@@ -50,3 +50,4 @@ class ModelPipeline:
     def model_workflow(self):
         self.perform_model_exploration()
         self.perform_model_training()
+        self.perform_model_evaluation()
