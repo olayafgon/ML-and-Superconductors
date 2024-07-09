@@ -6,9 +6,10 @@ pd.set_option('display.max_columns', 100)
 sys.path.append('./../')
 import config
 from utils import tools
+from models.data_model_processing import data_model_processor
 from models.autogluon import autogluon_models
 from models.hiperparameter_search import hiperameter_exploration
-from models.data_model_processing import data_model_processor
+from models.final_model import model_training
 
 class ModelPipeline:
     def __init__(self, materials_data, run_results_path):
@@ -18,7 +19,7 @@ class ModelPipeline:
 
     def perform_model_exploration(self):
         if self.model_exploration_options != None:
-            tools.log_main('· Starting model and hiperparameter exploration with Autogluon...', save_path=self.run_results_path)
+            tools.log_main('· MODULE: Starting model and hiperparameter exploration with Autogluon...', save_path=self.run_results_path)
             for method in self.model_exploration_options:
                 Data_Processor = data_model_processor.DataPreprocessor(self.materials_data)
                 if method != 'Hiperparameters_Exploration':
@@ -28,7 +29,18 @@ class ModelPipeline:
                     Hiperameter_Exploration = hiperameter_exploration.HiperparameterExploration(self.run_results_path, method, Data_Processor)
                     Hiperameter_Exploration.hiperparameter_exploration_run()
         else:
-            tools.log_main('· Skipping model exploration...', save_path=self.run_results_path)
+            tools.log_main('· MODULE: Skipping model exploration...', save_path=self.run_results_path)
+    
+    def perform_model_training(self):
+        if config.FINAL_MODEL_TRAINING:
+            tools.log_main('· MODULE: Starting model training...', save_path=self.run_results_path)
+            Data_Processor = data_model_processor.DataPreprocessor(self.materials_data)
+            Model_Training = model_training.ModelTraining(self.run_results_path, Data_Processor)
+            self.final_model, self.X_test, self.y_test = Model_Training.model_training_run()
+        else:
+            tools.log_main('· MODULE: Skipping final model training...', save_path=self.run_results_path)
+            
 
     def model_workflow(self):
         self.perform_model_exploration()
+        self.perform_model_training()
