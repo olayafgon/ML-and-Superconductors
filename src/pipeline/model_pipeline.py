@@ -1,8 +1,6 @@
 import sys
 import pandas as pd
 
-pd.set_option('display.max_columns', 100)
-
 sys.path.append('./../')
 import config
 from utils import tools
