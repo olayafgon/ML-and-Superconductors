@@ -4,9 +4,8 @@ data/data_compressed
 data/materials_names
 data/old
 data
+notebooks
 results
-notebooks/AutogluonModel/
-notebooks/AutogluonModels/
 src/AutogluonModel_test/RandomUnderSampler/__version__
 src/AutogluonModel_test/RandomUnderSampler/learner.pkl
 src/AutogluonModel_test/RandomUnderSampler/metadata.json
