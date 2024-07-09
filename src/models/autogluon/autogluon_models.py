@@ -88,12 +88,9 @@ class AutogluonTraining:
         ARGS:
             X (pd.DataFrame): The features data.
             y (pd.Series): The target data.
-            resampling_technique (object, optional): The resampling technique to use. 
-                                                     Defaults to None.
-            test_size (float, optional): The proportion of the data to use for testing. 
-                                         Defaults to 0.2.
-            random_state (int, optional): The random seed to use for splitting the data. 
-                                          Defaults to 42.
+            resampling_technique (object, optional): The resampling technique to use. Defaults to None.
+            test_size (float, optional): The proportion of the data to use for testing. Defaults to 0.2.
+            random_state (int, optional): The random seed to use for splitting the data. Defaults to 42.
 
         RETURNS:
             tuple: A tuple containing the training and test features and target.
@@ -111,8 +108,7 @@ class AutogluonTraining:
             X (pd.DataFrame): The features data.
             y (pd.Series): The target data.
             method_path (str): The path to save the method results.
-            resampling_technique (object, optional): The resampling technique used. 
-                                                     Defaults to None.
+            resampling_technique (object, optional): The resampling technique used. Defaults to None.
             n_PCA (int, optional): The number of PCA components used. Defaults to None.
         """
         autogluon_path = os.path.join(method_path, 'Autogluon')
@@ -143,8 +139,10 @@ class AutogluonTraining:
                 self.train_and_evaluate_autogluon(X, y, autogluon_path, technique)
         if self.method == 'PCA_Resampling_Autogluon':
             for n_PCA in self.pca_components_list:
-                X, pca_columns = self.Data_Processor.apply_pca(n_PCA, X)
-                X, y = self.Data_Processor.basic_processing(X, y, pca_columns)
+                X_temp = X.copy()
+                y_temp = y.copy()
+                X_temp, pca_columns = self.Data_Processor.apply_pca(n_PCA, X_temp)
+                X_temp, y_temp = self.Data_Processor.basic_processing(X_temp, y_temp, pca_columns)
                 for technique_name, technique in self.resampling_techniques:
                     autogluon_path = os.path.join(self.run_results_path, self.method, str(n_PCA), technique_name)
-                    self.train_and_evaluate_autogluon(X, y, autogluon_path, technique, n_PCA=n_PCA)
+                    self.train_and_evaluate_autogluon(X_temp, y_temp, autogluon_path, technique, n_PCA=n_PCA)

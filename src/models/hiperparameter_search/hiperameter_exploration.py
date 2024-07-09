@@ -167,7 +167,8 @@ class HiperparameterExploration:
         f1 = f1_score(y_test, y_pred)
         auc = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
         confusion_matrix_result = confusion_matrix(y_test, y_pred)
-
+        
+        os.makedirs(report_path, exist_ok=True)
         with open(os.path.join(report_path, 'hiperparameter_methods_results.txt'), 'a') as file:
             file.write(f"\n--- {name} ---\n")
             file.write(f"Mejores hiperparámetros: {best_param}\n")
