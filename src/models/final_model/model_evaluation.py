@@ -249,7 +249,7 @@ class ModelEvaluation:
         tools.create_folder(figures_save_path)
         if self.model_algorithm == 'XGBClassifier':
             self.plot_training_curve(self.model, figures_save_path)
-        # self.plot_shap_values(self.model, self.X_test, figures_save_path)
+        self.plot_shap_values(self.model, self.X_test, figures_save_path)
         self.plot_fermi_distribution_compare(self.true_positive, self.false_negative, 'Verdaderos positivos', 'Falsos negativos', 
                                             'Energía de Fermi en predicciones de superconductores', 
                                             figures_save_path, 'fermi_energy_supercond_predictions')
