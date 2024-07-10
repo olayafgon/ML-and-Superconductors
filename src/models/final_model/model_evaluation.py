@@ -1,6 +1,7 @@
 import sys
 import os
 import pandas as pd
+import numpy as np
 import seaborn as sns
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score
 import matplotlib.pyplot as plt
@@ -83,13 +84,14 @@ class ModelEvaluation:
         
     @staticmethod
     def plot_fermi_distribution_compare(data1, data2, label1, label2, title, save_path, save_name):
-        plt.figure(figsize=(8, 3.5))
+        plt.figure(figsize=(8, 4))
         sns.histplot(data1['fermi_energy'], kde=True, color='#66C2A5', label=label1, stat='density')
         sns.histplot(data2['fermi_energy'], kde=True, color='#FC8D62', label=label2, stat='density')
         plt.legend()
         plt.title(title)
         plt.xlabel('Energía de Fermi')
         plt.ylabel('Densidad')
+        plt.tight_layout()
         plt.savefig(os.path.join(save_path, save_name+'.png'))
         plt.close()
     
@@ -103,7 +105,7 @@ class ModelEvaluation:
         labels = ['No', 'Sí']
         x = range(len(labels))
         bar_width = 0.35
-        plt.figure(figsize=(8, 3.5))
+        plt.figure(figsize=(8, 4))
         bars1 = plt.bar(x, data1_counts, width=bar_width, color='#66C2A5', label=label1)
         bars2 = plt.bar([p + bar_width for p in x], data2_counts, width=bar_width, color='#FC8D62', label=label2)
         max_height = max(max(data1_counts), max(data2_counts))
@@ -122,6 +124,28 @@ class ModelEvaluation:
         plt.title(title)
         plt.xticks([p + bar_width / 2 for p in x], labels)
         plt.legend()
+        plt.tight_layout()
+        plt.savefig(os.path.join(save_path, save_name + '.png'))
+        plt.close()
+
+    @staticmethod
+    def plot_bravais_lattice_distribution(data1, data2, label1, label2, title, save_path, save_name):
+        combined_categories = np.unique(data1['bravais_lattice'].values.tolist() + data2['bravais_lattice'].values.tolist())
+        counts1 = data1['bravais_lattice'].value_counts().reindex(combined_categories, fill_value=0)
+        counts2 = data2['bravais_lattice'].value_counts().reindex(combined_categories, fill_value=0)
+        bar_width = 0.35
+        x = np.arange(len(combined_categories))
+        plt.figure(figsize=(10, 4))
+        ax = plt.subplot(111)
+        ax.bar(x - bar_width/2, counts1, width=bar_width, color='#66C2A5', align='center', label=label1)
+        ax.bar(x + bar_width/2, counts2, width=bar_width, color='#FC8D62', align='center', label=label2)
+        ax.set_title(title)
+        ax.set_xlabel('Red de Bravais')
+        ax.set_ylabel('Frecuencia')
+        ax.set_xticks(x)
+        ax.set_xticklabels(combined_categories, rotation=90)
+        ax.legend()
+        plt.tight_layout()
         plt.savefig(os.path.join(save_path, save_name + '.png'))
         plt.close()
         
@@ -155,6 +179,12 @@ class ModelEvaluation:
         self.plot_magnetism_distribution(self.false_positive, self.true_negative, 'Falsos positivos', 'Verdaderos negativos',
                                         'Magnetismo en predicciones de no superconductores', 
                                         figures_save_path, 'magnetism_supercond_non_predictions')
+        self.plot_bravais_lattice_distribution(self.true_positive, self.false_negative, 'Verdaderos positivos', 'Falsos negativos', 
+                                        'Red de Bravais en predicciones de superconductores', 
+                                        figures_save_path, 'bravais_lattice_supercond_predictions')
+        self.plot_bravais_lattice_distribution(self.false_positive, self.true_negative, 'Falsos positivos', 'Verdaderos negativos', 
+                                        'Red de Bravais en predicciones de no superconductores', 
+                                        figures_save_path, 'bravais_lattice_non_supercond_predictions')
 
     def model_evaluation_run(self):
         self.evaluate()
