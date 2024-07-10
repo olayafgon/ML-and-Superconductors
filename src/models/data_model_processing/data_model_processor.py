@@ -121,3 +121,7 @@ class DataPreprocessor:
         X_pca_2 = pd.DataFrame(X_pca_1, columns=pca_columns)
         X_pca = pd.concat([X.loc[:, :'is_magnetic'].reset_index(drop=True), X_pca_2.reset_index(drop=True)], axis=1)
         return X_pca, pca_columns
+    
+    def get_original_data_test(self, X_test):
+        data_test = self.data.iloc[X_test.index].copy()
+        return data_test

@@ -10,8 +10,9 @@ from models.hiperparameter_search import hiperameter_exploration
 from models.final_model import model_training, model_evaluation
 
 class ModelPipeline:
-    def __init__(self, materials_data, run_results_path):
+    def __init__(self, materials_data, supercon_data, run_results_path):
         self.materials_data = materials_data
+        self.supercon_data = supercon_data
         self.run_results_path = run_results_path
         self.model_exploration_options = config.MODEL_EXPLORATION
 
@@ -32,8 +33,8 @@ class ModelPipeline:
     def perform_model_training(self):
         if config.FINAL_MODEL_TRAINING:
             tools.log_main('· MODULE: Starting model training...', save_path=self.run_results_path)
-            Data_Processor = data_model_processor.DataPreprocessor(self.materials_data)
-            Model_Training = model_training.ModelTraining(self.run_results_path, Data_Processor)
+            self.Data_Processor = data_model_processor.DataPreprocessor(self.materials_data)
+            Model_Training = model_training.ModelTraining(self.run_results_path, self.Data_Processor)
             self.final_model, self.X_test, self.y_test = Model_Training.model_training_run()
         else:
             tools.log_main('· MODULE: Skipping final model training...', save_path=self.run_results_path)
@@ -41,11 +42,11 @@ class ModelPipeline:
     def perform_model_evaluation(self):
         if config.FINAL_MODEL_TRAINING:
             tools.log_main('· MODULE: Starting model evaluation...', save_path=self.run_results_path)
-            Model_Evaluation = model_evaluation.ModelEvaluation(self.run_results_path, self.final_model, self.X_test, self.y_test)
-            Model_Evaluation.model_training_run()
+            data_test = self.Data_Processor.get_original_data_test(self.X_test)
+            Model_Evaluation = model_evaluation.ModelEvaluation(self.run_results_path, self.final_model, self.X_test, self.y_test, data_test, self.supercon_data)
+            Model_Evaluation.model_evaluation_run()
         else:
             tools.log_main('· MODULE: Skipping final model evaluation...', save_path=self.run_results_path)
-            
 
     def model_workflow(self):
         self.perform_model_exploration()
