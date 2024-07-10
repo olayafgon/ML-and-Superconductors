@@ -1,6 +1,7 @@
 import sys
 import os
 import pandas as pd
+import seaborn as sns
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -80,23 +81,86 @@ class ModelEvaluation:
         fig = shap.plots.beeswarm(shap_values, max_display=15, show=False)
         plt.savefig(os.path.join(save_path, 'shap_enjambre.png'))
         
+    @staticmethod
+    def plot_fermi_distribution_compare(data1, data2, label1, label2, title, save_path, save_name):
+        plt.figure(figsize=(8, 3.5))
+        sns.histplot(data1['fermi_energy'], kde=True, color='#66C2A5', label=label1, stat='density')
+        sns.histplot(data2['fermi_energy'], kde=True, color='#FC8D62', label=label2, stat='density')
+        plt.legend()
+        plt.title(title)
+        plt.xlabel('Energía de Fermi')
+        plt.ylabel('Densidad')
+        plt.savefig(os.path.join(save_path, save_name+'.png'))
+        plt.close()
+    
+    @staticmethod
+    def plot_magnetism_distribution(data1, data2, label1, label2, title, save_path, save_name):
+        data1_counts = data1['is_magnetic'].value_counts().sort_index().reindex([0, 1], fill_value=0)
+        data2_counts = data2['is_magnetic'].value_counts().sort_index().reindex([0, 1], fill_value=0)
+        total_counts1 = data1_counts.sum()
+        total_counts2 = data2_counts.sum()
+
+        labels = ['No', 'Sí']
+        x = range(len(labels))
+        bar_width = 0.35
+        plt.figure(figsize=(8, 3.5))
+        bars1 = plt.bar(x, data1_counts, width=bar_width, color='#66C2A5', label=label1)
+        bars2 = plt.bar([p + bar_width for p in x], data2_counts, width=bar_width, color='#FC8D62', label=label2)
+        max_height = max(max(data1_counts), max(data2_counts))
+        for bar, count in zip(bars1, data1_counts):
+            yval = bar.get_height()
+            percent = yval / total_counts1 * 100
+            plt.text(bar.get_x() + bar.get_width() / 2, yval, f'{int(yval)}\n({percent:.1f}%)', va='bottom', ha='center')
+        for bar, count in zip(bars2, data2_counts):
+            yval = bar.get_height()
+            percent = yval / total_counts2 * 100
+            plt.text(bar.get_x() + bar.get_width() / 2, yval, f'{int(yval)}\n({percent:.1f}%)', va='bottom', ha='center')
+
+        plt.ylim(0, max_height * 1.25)
+        plt.xlabel('¿Es magnético?')
+        plt.ylabel('Frecuencia')
+        plt.title(title)
+        plt.xticks([p + bar_width / 2 for p in x], labels)
+        plt.legend()
+        plt.savefig(os.path.join(save_path, save_name + '.png'))
+        plt.close()
+        
     def get_test_data_and_pred(self):
         self.data_test['predicted_superconductor'] = self.y_pred.astype(bool).copy()
         self.data_test['ICSD'] = self.data_test['ICSD'].astype('Int64')
         self.supercon_data['ICSD'] = self.supercon_data['ICSD'].astype('Int64')
         self.test_data_and_pred = pd.merge(self.data_test, self.supercon_data[['ICSD', 'critical_temperature_k', 'synth_doped']], on='ICSD', how='left')
+    
+    def get_negatives_positives(self):
+        self.true_positive = self.test_data_and_pred[(self.test_data_and_pred['is_superconductor'] == True) & (self.test_data_and_pred['predicted_superconductor'] == True)].copy()
+        self.false_negative = self.test_data_and_pred[(self.test_data_and_pred['is_superconductor'] == True) & (self.test_data_and_pred['predicted_superconductor'] == False)].copy()
+        self.false_positive = self.test_data_and_pred[(self.test_data_and_pred['is_superconductor'] == False) & (self.test_data_and_pred['predicted_superconductor'] == True)].copy()
+        self.true_negative = self.test_data_and_pred[(self.test_data_and_pred['is_superconductor'] == False) & (self.test_data_and_pred['predicted_superconductor'] == False)].copy()
         
     def plot_figures(self):
         figures_save_path = os.path.join(self.eval_folder_path, 'plots')
         tools.create_folder(figures_save_path)
         if self.model_algorithm == 'XGBClassifier':
             self.plot_training_curve(self.model, figures_save_path)
-        self.plot_shap_values(self.model, self.X_test, figures_save_path)
-         
+        # self.plot_shap_values(self.model, self.X_test, figures_save_path)
+        self.plot_fermi_distribution_compare(self.true_positive, self.false_negative, 'Verdaderos positivos', 'Falsos negativos', 
+                                            'Energía de Fermi en predicciones de superconductores', 
+                                            figures_save_path, 'fermi_energy_supercond_predictions')
+        self.plot_fermi_distribution_compare(self.false_positive, self.true_negative, 'Falsos positivos', 'Verdaderos negativos', 
+                                            'Energía de Fermi en predicciones de no superconductores', 
+                                            figures_save_path, 'fermi_energy_non_supercond_predictions')
+        self.plot_magnetism_distribution(self.true_positive, self.false_negative, 'Verdaderos positivos', 'Falsos negativos', 
+                                        'Magnetismo en predicciones de superconductores', 
+                                        figures_save_path, 'magnetism_supercond_predictions')
+        self.plot_magnetism_distribution(self.false_positive, self.true_negative, 'Falsos positivos', 'Verdaderos negativos',
+                                        'Magnetismo en predicciones de no superconductores', 
+                                        figures_save_path, 'magnetism_supercond_non_predictions')
+
     def model_evaluation_run(self):
         self.evaluate()
         self.calculate_save_metrics()
-        self.plot_figures()
         self.get_test_data_and_pred()
+        self.get_negatives_positives()
+        self.plot_figures()
         
         
