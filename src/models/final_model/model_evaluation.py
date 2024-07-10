@@ -1,5 +1,6 @@
 import sys
 import os
+import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -11,10 +12,12 @@ from utils import tools
 
 
 class ModelEvaluation:
-    def __init__(self, run_results_path, model, X_test, y_test):
+    def __init__(self, run_results_path, model, X_test, y_test, data_test, supercon_data):
         self.run_results_path = run_results_path
         self.X_test = X_test
         self.y_test = y_test
+        self.data_test = data_test
+        self.supercon_data = supercon_data
         self.model = model
         self.eval_folder_path = os.path.join(self.run_results_path, 'Final_Model')
         self.model_algorithm = config.FINAL_MODEL
@@ -77,16 +80,23 @@ class ModelEvaluation:
         fig = shap.plots.beeswarm(shap_values, max_display=15, show=False)
         plt.savefig(os.path.join(save_path, 'shap_enjambre.png'))
         
+    def get_test_data_and_pred(self):
+        self.data_test['predicted_superconductor'] = self.y_pred.astype(bool).copy()
+        self.data_test['ICSD'] = self.data_test['ICSD'].astype('Int64')
+        self.supercon_data['ICSD'] = self.supercon_data['ICSD'].astype('Int64')
+        self.test_data_and_pred = pd.merge(self.data_test, self.supercon_data[['ICSD', 'critical_temperature_k', 'synth_doped']], on='ICSD', how='left')
+        
     def plot_figures(self):
         figures_save_path = os.path.join(self.eval_folder_path, 'plots')
         tools.create_folder(figures_save_path)
         if self.model_algorithm == 'XGBClassifier':
             self.plot_training_curve(self.model, figures_save_path)
         self.plot_shap_values(self.model, self.X_test, figures_save_path)
-        
-        
-    def model_training_run(self):
+         
+    def model_evaluation_run(self):
         self.evaluate()
         self.calculate_save_metrics()
         self.plot_figures()
+        self.get_test_data_and_pred()
+        
         
