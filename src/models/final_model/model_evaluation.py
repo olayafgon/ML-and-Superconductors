@@ -148,8 +148,8 @@ class ModelEvaluation:
     
     @staticmethod
     def plot_corr_matrix(data1, data2, label1, label2, title, save_path, save_name):
-        data1_subset = data1[['fermi_energy', 'is_magnetic', 'critical_temperature_k']].copy()
-        data2_subset = data2[['fermi_energy', 'is_magnetic', 'critical_temperature_k']].copy()
+        data1_subset = data1[['fermi_energy', 'is_magnetic', 'critical_temperature_k', 'synth_doped']].copy()
+        data2_subset = data2[['fermi_energy', 'is_magnetic', 'critical_temperature_k', 'synth_doped']].copy()
         corr_matrix_data1 = data1_subset.corr()
         corr_matrix_data2 = data2_subset.corr()
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
