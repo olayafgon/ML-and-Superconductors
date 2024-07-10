@@ -41,7 +41,7 @@ def main():
         EDA_Pipeline.eda_workflow()
 
     # Model exploration
-    Model_Pipeline = model_pipeline.ModelPipeline(materials_data, run_results_path)
+    Model_Pipeline = model_pipeline.ModelPipeline(materials_data, supercon_data, run_results_path)
     Model_Pipeline.model_workflow()
 
     #END
