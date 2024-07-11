@@ -75,10 +75,14 @@ class ModelEvaluation:
     @staticmethod     
     def plot_shap_values(model, X_test, save_path):
         explainer = shap.Explainer(model, X_test)
-        shap_values = explainer(X_test)
+        shap_values = explainer(X_test, check_additivity=False)
+        plt.figure()
         fig = shap.plots.bar(shap_values, max_display=13, show=False)
+        plt.tight_layout()
         plt.savefig(os.path.join(save_path, 'shap_barras.png'))
+        plt.figure()
         fig = shap.plots.beeswarm(shap_values, max_display=15, show=False)
+        plt.tight_layout()
         plt.savefig(os.path.join(save_path, 'shap_enjambre.png'))
         
     @staticmethod
