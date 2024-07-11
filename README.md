@@ -1,9 +1,13 @@
 # Electronic structure calculations with machine learning techniques - Superconductor prediction
 
-This repository contains a final project of the degree on physics. 
+This repository contains a final project of the degree on physics. This project aims to serve as an exploration method in binary classification models in order to identify superconducting crystalline materials.
 
 - Author: Olaya Folgueiras González
 - University of Oviedo
+
+## Data
+
+Materials data is obtained from Aflowlib database (Aflow - Automatic FLOW for Materials Discovery. https://aflowlib.org/). In the code there is a process to download it, but it can take several hours. Superconductors data is obteined from the proyect that can be found on repo https://github.com/aimat-lab/3DSC. Specifically, the file superconductors_3D/data/final/ICSD/3DSC_ICSD_only_IDs.csv.
 
 ## Installation
 
@@ -30,4 +34,4 @@ Before executing the main program, you need to configure the data parameters:
 
 3. **Execute the Main Program**: Run the `main.py` file using Python: `python main.py`.
 
-This will execute the main script of the project. Make sure you have followed all the previous steps and activated the environment before running the script.
+This will execute the main script of the project. Make sure you have followed all the previous steps and activated the environment before running the script. Also, make sure that the required data and the appropriate settings are present.
