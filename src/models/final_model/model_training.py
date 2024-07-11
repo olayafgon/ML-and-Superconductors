@@ -42,7 +42,7 @@ class ModelTraining:
     
     def train_model(self):
         if self.model_algorithm == 'XGBClassifier':
-            early_stopping_rounds = self.model_hiperparameters.pop('early_stopping_rounds', 10)
+            early_stopping_rounds = self.model_hiperparameters.pop('early_stopping_rounds', 50)
             eval_metric = self.model_hiperparameters.pop('eval_metric', 'error')
             model = XGBClassifier(**self.model_hiperparameters)
             model.set_params(eval_metric=eval_metric, early_stopping_rounds=early_stopping_rounds)
